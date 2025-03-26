@@ -1,0 +1,97 @@
+# Ignore IDE-generated files and build output
+*.identcache
+*.local
+*.obj
+*.map
+*.tds
+*.dcu
+*.~*
+*.drc
+*.stat
+*.dsk
+*.dof
+*.dpr.bak
+*.bpl
+*.hpp
+*.dsk
+*.bak
+*.groupproj.local
+*.tvsconfig
+*.tvsconfig.local
+
+# Ignore Project User Configs
+*.dproj.local
+*.groupproj.local
+*.bdsproj.local
+*.identcache
+
+# Ignore compiled binaries
+*.exe
+*.dll
+*.bpi
+*.lib
+*.a
+*.o
+*.rsm
+*.tds
+*.il?
+*.ilk
+*.pdb
+*.ncb
+*.aps
+*.idb
+*.opt
+*.plg
+*.bpl
+
+# Ignore __history (older Embarcadero versions)
+__history/
+
+# Ignore Form Files (Optional, Keep if UI Design Tracking is Needed)
+*.dfm  # VCL Form Files
+*.fmx  # FireMonkey Form Files
+*.nfm  # CLX Form Files
+
+# Ignore C++ Precompiled Headers
+*.pch
+*.hds
+
+# Ignore Debug and Release Folders
+Win32/Debug/
+Win32/Release/
+Win64/Debug/
+Win64/Release/
+Android/Debug/
+Android/Release/
+iOSDevice64/Debug/
+iOSDevice64/Release/
+iOSSimulator/Debug/
+iOSSimulator/Release/
+macOS/Debug/
+macOS/Release/
+
+# Ignore FireMonkey Platform-Specific Files
+*.apk  # Android Package
+*.ipa  # iOS Package
+*.dSYM/  # macOS Debug Symbols
+
+# Ignore Log and Temp Files
+*.log
+*.tmp
+*.temp
+*.bak
+*.~*
+
+# Ignore Deployment & Intermediate Files
+*.tvsconfig
+*.deployproj
+*.deviceproj
+*.dbk
+*.xcodeproj
+*.xcworkspace
+
+# Ignore Android & iOS Build Directories
+Android/
+iOSDevice64/
+iOSSimulator/
+macOS/
