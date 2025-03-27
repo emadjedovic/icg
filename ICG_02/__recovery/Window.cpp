@@ -36,9 +36,21 @@ void __fastcall TGrahamScan::GeneratePointsClick(TObject* Sender)
     // number generator using the current time
     srand(time(0));
 
-    for (int i = 1; i <= Edit->Text.ToInt(); i++) {
-        pointList.push_back(MyPoint(60 + rand() % (Image->Width - 100),
-            60 + rand() % (Image->Height - 100)));
+    // runs a number of times determined by the value in the Edit component
+    int pointCount = Edit->Text.ToInt();
+
+    int widthLimit = Image->Width - 100;
+    int heightLimit = Image->Height - 100;
+
+    int xOffset = 60; // Constant for the x-offset
+    int yOffset = 60; // Constant for the y-offset
+
+    for (int i = 0; i < pointCount; i++) {
+        int randomX = xOffset + rand() % widthLimit; // X coordinate with offset
+        int randomY =
+            yOffset + rand() % heightLimit; // Y coordinate with offset
+        MyPoint newPoint = MyPoint(randomX, randomY); // Create the point
+        pointList.push_back(newPoint); // Add point to the list
     }
 
     DrawPointList(pointList, clRed);

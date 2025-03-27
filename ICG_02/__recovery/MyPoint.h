@@ -11,7 +11,7 @@ struct MyPoint
     float x, y;
     MyPoint() : x(0), y(0) {};
     MyPoint(float x, float y) : x(x), y(y) {};
-    void Draw(TColor = clWhite);
+    void Draw(TImage*, TColor = clWhite);
 };
 
 bool Criterion(MyPoint, MyPoint);
