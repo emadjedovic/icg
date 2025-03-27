@@ -19,39 +19,42 @@ object GrahamScan: TGrahamScan
     Height = 377
     OnMouseDown = ImageMouseDown
   end
-  object GeneratePoints: TButton
+  object GeneratePointsButton: TButton
     Left = 8
     Top = 408
     Width = 121
     Height = 25
     Caption = 'Generate Points'
     TabOrder = 0
-    OnClick = GeneratePointsClick
+    OnClick = GeneratePointsButtonClick
   end
-  object Clear: TButton
+  object ClearButton: TButton
     Left = 152
     Top = 408
     Width = 113
     Height = 25
     Caption = 'Clear'
     TabOrder = 1
-    OnClick = ClearClick
+    OnClick = ClearButtonClick
   end
-  object GrahamScan: TButton
+  object GrahamScanButton: TButton
     Left = 288
     Top = 408
     Width = 113
     Height = 25
     Caption = 'Graham Scan'
     TabOrder = 2
-    OnClick = GrahamScanClick
+    OnClick = GrahamScanButtonClick
   end
   object Edit: TEdit
     Left = 472
     Top = 408
     Width = 144
     Height = 25
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 3
-    Text = 'No text...'
+    Text = '20'
+    TextHint = 'Number of points to generate.'
   end
 end

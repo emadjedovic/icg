@@ -29,23 +29,35 @@ void __fastcall TGrahamScan::ImageMouseDown(
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TGrahamScan::GeneratePointsClick(TObject* Sender)
+void __fastcall TGrahamScan::GeneratePointsButtonClick(TObject* Sender)
 {
     // ensures that the random number generator produces different results
     // every time the program runs, by setting the seed for the random
     // number generator using the current time
     srand(time(0));
 
-    for (int i = 1; i <= Edit->Text.ToInt(); i++) {
-        pointList.push_back(MyPoint(60 + rand() % (Image->Width - 100),
-            60 + rand() % (Image->Height - 100)));
+    // runs a number of times determined by the value in the Edit component
+    int pointCount = Edit->Text.ToInt();
+
+    int widthLimit = Image->Width - 100;
+    int heightLimit = Image->Height - 100;
+
+    int xOffset = 60; // Constant for the x-offset
+    int yOffset = 60; // Constant for the y-offset
+
+    for (int i = 0; i < pointCount; i++) {
+        int randomX = xOffset + rand() % widthLimit; // X coordinate with offset
+        int randomY =
+            yOffset + rand() % heightLimit; // Y coordinate with offset
+        MyPoint newPoint = MyPoint(randomX, randomY); // Create the point
+        pointList.push_back(newPoint); // Add point to the list
     }
 
-    DrawPointList(pointList, clRed);
+    DrawPointList(Image, pointList, clRed);
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TGrahamScan::ClearClick(TObject* Sender)
+void __fastcall TGrahamScan::ClearButtonClick(TObject* Sender)
 {
     Image->Canvas->Brush->Color = clBlack;
     Image->Canvas->FillRect(Image->ClientRect);
@@ -54,9 +66,95 @@ void __fastcall TGrahamScan::ClearClick(TObject* Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TGrahamScan::GrahamScanClick(TObject* Sender)
+void __fastcall TGrahamScan::GrahamScanButtonClick(TObject* Sender)
 {
-    return;
+    list<MyPoint> Hull = GrahamScan(pointList);
+
+    Image->Canvas->MoveTo(Hull.front().x, Hull.front().y);
+
+    list<MyPoint>::iterator i = ++Hull.begin();
+
+    while (i != Hull.end()) {
+        MyPoint nextPoint = (*i);
+        Image->Canvas->LineTo(nextPoint.x, nextPoint.y);
+        i++;
+    }
 }
 //---------------------------------------------------------------------------
+
+list<MyPoint> TGrahamScan::GrahamScan(list<MyPoint> L)
+{
+    L.sort(Criterion);
+    MyPoint firstPoint = *L.begin();
+    MyPoint secondPoint = *(++L.begin());
+
+    list<MyPoint>::iterator i;
+
+    stack<MyPoint> upperstack;
+    stack<MyPoint> lowerstack;
+
+    // Build the upper hull
+    upperstack.push(firstPoint);
+    upperstack.push(secondPoint);
+    i = ++(++L.begin()); // third point
+
+    while(i != L.end()) {
+        MyPoint next = *i;
+        // Ensure at least 3 points for orientation check
+        while (upperstack.size() >= 2) {
+            MyPoint current = upperstack.top();
+            upperstack.pop();
+            MyPoint previous = upperstack.top();
+            upperstack.push(current); // Restore the top point
+            // Check orientation
+            if (Orientation(previous, current, next) >= 0)
+                upperstack.pop();
+            else
+                break;
+        }
+
+        upperstack.push(next);
+        i++;
+    }
+
+    // Build the lower hull
+    lowerstack.push(firstPoint);
+    lowerstack.push(secondPoint);
+    i = ++(++L.begin()); // third point
+
+    while(i != L.end()) {
+        MyPoint next = *i;
+        // Ensure at least 3 points for orientation check
+        while (lowerstack.size() >= 2) {
+            MyPoint current = lowerstack.top();
+            lowerstack.pop();
+            MyPoint previous = lowerstack.top();
+            lowerstack.push(current); // Restore the top point
+            // Check orientation
+            if (Orientation(previous, current, next) <= 0)
+                lowerstack.pop();
+            else
+                break;
+        }
+
+        lowerstack.push(next);
+        i++;
+    }
+
+    // Combine the two hulls
+    list<MyPoint> hullList;
+
+    while (!upperstack.empty()) {
+        hullList.push_back(upperstack.top());
+        upperstack.pop();
+    }
+
+    lowerstack.pop();
+    while (!lowerstack.empty()) {
+        hullList.push_back(lowerstack.top());
+        lowerstack.pop();
+    }
+
+    return hullList;
+}
 

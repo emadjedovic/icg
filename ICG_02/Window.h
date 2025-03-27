@@ -10,22 +10,24 @@
 #include <Vcl.ExtCtrls.hpp>
 #include <MyPoint.h>
 #include <list>
+#include <stack>
 //---------------------------------------------------------------------------
 class TGrahamScan : public TForm
 {
 __published:	// IDE-managed Components
     TImage *Image;
-    TButton *GeneratePoints;
-    TButton *Clear;
-    TButton *GrahamScan;
+    TButton *GeneratePointsButton;
+    TButton *ClearButton;
+    TButton *GrahamScanButton;
     TEdit *Edit;
     void __fastcall FormActivate(TObject *Sender);
     void __fastcall ImageMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
           int X, int Y);
-    void __fastcall GeneratePointsClick(TObject *Sender);
-    void __fastcall ClearClick(TObject *Sender);
-    void __fastcall GrahamScanClick(TObject *Sender);
+    void __fastcall GeneratePointsButtonClick(TObject *Sender);
+    void __fastcall ClearButtonClick(TObject *Sender);
+    void __fastcall GrahamScanButtonClick(TObject *Sender);
 private:	// User declarations
+list<MyPoint> GrahamScan(list<MyPoint>);
 public:		// User declarations
     __fastcall TGrahamScan(TComponent* Owner);
 

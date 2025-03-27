@@ -16,6 +16,6 @@ struct MyPoint
 
 bool Criterion(MyPoint, MyPoint);
 int Orientation(MyPoint, MyPoint, MyPoint);
-void DrawPointList(list<MyPoint>, TColor);
+void DrawPointList(TImage*, list<MyPoint>, TColor);
 
 #endif

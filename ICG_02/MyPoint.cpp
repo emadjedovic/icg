@@ -8,8 +8,8 @@
 void MyPoint::Draw(TImage* Image, TColor color)
 {
     Image->Canvas->Pen->Color = color;
-    Image->Canvas->Ellipse(a.x - 3, a.y - 3, a.x + 3, a.y + 3);
-    Slika->Canvas->Brush->Color = clRed;
+    Image->Canvas->Ellipse(x - 3, y - 3, x + 3, y + 3);
+    Image->Canvas->Brush->Color = clRed;
 }
 
 bool Criterion(MyPoint a, MyPoint b)
@@ -28,11 +28,11 @@ int Orientation(MyPoint a, MyPoint b, MyPoint c)
     return area; // is it enough to return just the sign?
 }
 
-void DrawPointList(list<MyPoint> l, TColor color)
+void DrawPointList(TImage* Image, list<MyPoint> l, TColor color)
 {
     list<MyPoint>::iterator i = l.begin();
     while (i != l.end()) {
-        (*i).Draw(color);
+        (*i).Draw(Image, color);
         i++;
     }
 }
