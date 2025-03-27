@@ -31,6 +31,12 @@ void __fastcall TGrahamScan::ImageMouseDown(
 
 void __fastcall TGrahamScan::GeneratePointsButtonClick(TObject* Sender)
 {
+    // clear the canvas first
+    Image->Canvas->Brush->Color = clBlack;
+    Image->Canvas->FillRect(Image->ClientRect);
+
+    pointList.clear();
+
     // ensures that the random number generator produces different results
     // every time the program runs, by setting the seed for the random
     // number generator using the current time
@@ -96,9 +102,10 @@ list<MyPoint> TGrahamScan::GrahamScan(list<MyPoint> L)
     // Build the upper hull
     upperstack.push(firstPoint);
     upperstack.push(secondPoint);
-    i = ++(++L.begin()); // third point
+    i = L.begin();
+    advance(i, 2); // third point
 
-    while(i != L.end()) {
+    while (i != L.end()) {
         MyPoint next = *i;
         // Ensure at least 3 points for orientation check
         while (upperstack.size() >= 2) {
@@ -120,9 +127,10 @@ list<MyPoint> TGrahamScan::GrahamScan(list<MyPoint> L)
     // Build the lower hull
     lowerstack.push(firstPoint);
     lowerstack.push(secondPoint);
-    i = ++(++L.begin()); // third point
+    i = L.begin();
+    advance(i, 2); // third point
 
-    while(i != L.end()) {
+    while (i != L.end()) {
         MyPoint next = *i;
         // Ensure at least 3 points for orientation check
         while (lowerstack.size() >= 2) {
@@ -141,13 +149,21 @@ list<MyPoint> TGrahamScan::GrahamScan(list<MyPoint> L)
         i++;
     }
 
-    // Combine the two hulls
+    // combine the two hulls
     list<MyPoint> hullList;
 
+    // reverse the upperstack
+    stack<MyPoint> tempStack;
     while (!upperstack.empty()) {
-        hullList.push_back(upperstack.top());
+        tempStack.push(upperstack.top());
         upperstack.pop();
     }
+    while (!tempStack.empty()) {
+        hullList.push_back(tempStack.top());
+        tempStack.pop();
+    }
+
+    // now the rightmost is the last in the hullList
 
     lowerstack.pop();
     while (!lowerstack.empty()) {
