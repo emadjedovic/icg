@@ -4,6 +4,13 @@
 
 #include "helper.h"
 
+void MyPoint::Draw(TImage* Image, TColor color, int size)
+{
+    Image->Canvas->Brush->Color = color;
+    Image->Canvas->Ellipse(x - size, y - size, x + size, y + size);
+    Image->Canvas->Brush->Color = clBlack; // Reset brush color
+}
+
 bool MyPoint::operator<(MyPoint p)
 {
     if (x < p.x)
@@ -13,11 +20,46 @@ bool MyPoint::operator<(MyPoint p)
     return y < p.y; // Compare y if x values are equal
 }
 
-void MyPoint::Draw(TImage* Image, TColor color, int size)
+bool MyPoint::operator==(MyPoint p)
 {
-	Image->Canvas->Brush->Color = color;
-    Image->Canvas->Ellipse(x - size, y - size, x + size, y + size);
-    Image->Canvas->Brush->Color = clBlack; // Reset brush color
+    return x == p.x && y == p.y;
+}
+
+void MySegment::Draw(TImage* Image, TColor color, int size)
+{
+    Image->Canvas->Brush->Color = color;
+    Image->Canvas->Pen->Color = color;
+
+    A.Draw(Image, color, size);
+    B.Draw(Image, color, size);
+
+    Image->Canvas->MoveTo(A.x, A.y);
+    Image->Canvas->LineTo(B.x, B.y);
+
+    Image->Canvas->Brush->Color = clBlack;
+    Image->Canvas->Pen->Color = clBlack;
+}
+
+void DrawPolygon(TImage* Image, const vector<MyPoint> &points, TColor color)
+{
+    int numPoints = points.size();
+    if (numPoints == 0)
+        return;
+
+    // Iterate through all points and draw edges
+    for (int i = 0; i < numPoints; i++) {
+        size_t nextIndex = (i + 1) % numPoints; // Ensures the polygon is closed
+        MyPoint currentPoint = points[i];
+        MyPoint nextPoint = points[nextIndex];
+
+        MySegment edge(currentPoint, nextPoint);
+        edge.Draw(Image, color);
+        currentPoint.Draw(Image, color);
+    }
+
+    // Explicitly draw the first point again to ensure closure
+    MyPoint firstPoint = points[0];
+    firstPoint.Draw(Image, color);
 }
 
 // Returns -1 (left turn), 1 (right turn), or 0 (collinear)
@@ -32,6 +74,9 @@ int Orientation(MyPoint A, MyPoint B, MyPoint C)
     double y3 = C.y;
 
     double area = x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2);
+
+    // actually modified, + area means positive orientation but due to
+    // TECHNICALITIES we do the opposite...
     if (area > 0)
         return -1;
     if (area < 0)
