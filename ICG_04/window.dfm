@@ -10,17 +10,16 @@ object App: TApp
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
-  Menu = MainMenu
   TextHeight = 15
   object Image: TImage
-    Left = 88
+    Left = 8
     Top = 8
-    Width = 513
+    Width = 608
     Height = 361
-    OnClick = ImageClick
+    OnMouseDown = ImageMouseDown
   end
   object ButtonConvexHull: TButton
-    Left = 88
+    Left = 136
     Top = 392
     Width = 91
     Height = 25
@@ -29,7 +28,7 @@ object App: TApp
     OnClick = ButtonConvexHullClick
   end
   object ButtonGeneratePoints: TButton
-    Left = 202
+    Left = 8
     Top = 392
     Width = 112
     Height = 25
@@ -38,8 +37,8 @@ object App: TApp
     OnClick = ButtonGeneratePointsClick
   end
   object ButtonClear: TButton
-    Left = 18
-    Top = 80
+    Left = 450
+    Top = 392
     Width = 55
     Height = 25
     Caption = 'Clear'
@@ -56,9 +55,5 @@ object App: TApp
     State = cbChecked
     TabOrder = 3
     OnClick = CheckBoxProcedureClick
-  end
-  object MainMenu: TMainMenu
-    Left = 32
-    Top = 8
   end
 end

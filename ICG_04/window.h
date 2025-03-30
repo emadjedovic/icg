@@ -13,6 +13,7 @@
 #include <stack>
 #include <vector>
 #include <MyPoint.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -20,33 +21,40 @@ TCanvas* canvas = 0;
 Graphics::TBitmap* Empty = new Graphics::TBitmap();
 Graphics::TBitmap* Image = new Graphics::TBitmap();
 
-bool demo = false;
+bool procedure = false;
 
 //---------------------------------------------------------------------------
 class TApp : public TForm
 {
   __published: // IDE-managed Components
-    TMainMenu* MainMenu;
     TImage* Image;
     TButton* ButtonConvexHull;
     TButton* ButtonGeneratePoints;
     TButton* ButtonClear;
     TCheckBox* CheckBoxProcedure;
-    void __fastcall ImageClick(TObject* Sender);
     void __fastcall ButtonConvexHullClick(TObject* Sender);
     void __fastcall ButtonGeneratePointsClick(TObject* Sender);
     void __fastcall ButtonClearClick(TObject* Sender);
     void __fastcall CheckBoxProcedureClick(TObject* Sender);
+    void __fastcall ImageMouseDown(
+        TObject* Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
   private: // User declarations
   public: // User declarations
     __fastcall TApp(TComponent* Owner);
 };
 
-void refresh;
-
 vector<MyPoint> points;
-stack<Graphics::TBitmap *> images;
-MyPoint currentPoint;
+stack<Graphics::TBitmap*> images;
+
+pair<int, int> FindLowerTangent(vector<MyPoint> &, vector<MyPoint> &, int, int);
+pair<int, int> FindUpperTangent(vector<MyPoint> &, vector<MyPoint> &, int, int);
+void AddHullPoints(vector<MyPoint> &, vector<MyPoint> &, int, int);
+
+vector<MyPoint> MergeHulls(vector<MyPoint>, vector<MyPoint>);
+vector<MyPoint> DivideAndConquerHull(vector<MyPoint>);
+
+void DrawPolygon(vector<MyPoint>, TCanvas*, TColor);
+void refresh();
 
 //---------------------------------------------------------------------------
 extern PACKAGE TApp* App;

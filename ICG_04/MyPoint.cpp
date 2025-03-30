@@ -4,20 +4,16 @@
 
 #include "MyPoint.h"
 
-bool MyPoint::operator<(const MyPoint &A, const MyPoint &B)
+
+bool comparePoints(MyPoint A, MyPoint B)
 {
-    return ccw(*this, A, B) == 1 ||
-           (ccw(*this, A, B) == 0 && abs(x - A.x) < abs(x - B.x));
-}
-bool classic(MyPoint B)
-{
-    return (x < B.x) || (x == B.x && y < B.y);
+    return (A.x < B.x) || (A.x == B.x && A.y < B.y);
 }
 
 int ccw(MyPoint p0, MyPoint p1, MyPoint p2)
 {
     int dx1, dx2, dy1, dy2;
-    dx1 = P1.x - P0.x;
+    dx1 = p1.x - p0.x;
     dx2 = p2.x - p1.x;
     dy1 = p1.y - p0.y;
     dy2 = p2.y - p1.y;
