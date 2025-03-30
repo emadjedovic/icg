@@ -9,6 +9,13 @@
 #pragma resource "*.dfm"
 TApp* App;
 
+bool operator<(const MyPoint &a, const MyPoint &b)
+{
+    return ccw(currentPoint, a, b) == 1 ||
+           (ccw(currentPoint, a, b) == 0 &&
+               abs(currentPoint.x - a.x) < abs(currentPoint.x - b.x));
+}
+
 void DrawPolygon(vector<MyPoint> points, TCanvas* canvas, TColor color)
 {
     canvas->Pen->Color = color;
@@ -21,117 +28,106 @@ void DrawPolygon(vector<MyPoint> points, TCanvas* canvas, TColor color)
     canvas->Pen->Color = clBlack;
 }
 
-vector<MyPoint> MergeHulls(vector<MyPoint> setLeft, vector<MyPoint> setRight)
+vector<MyPoint> MergeHulls(vector<MyPoint> hullA, vector<MyPoint> hullB)
 {
     vector<MyPoint> mergedHull;
+    if (hullA.empty())
+        return hullB;
+    if (hullB.empty())
+        return hullA;
 
-    if (setLeft.empty())
-        return setRight;
-    if (setRight.empty())
-        return setLeft;
+    stable_sort(hullA.begin(), hullA.end(), comparePoints);
+    stable_sort(hullB.begin(), hullB.end(), comparePoints);
 
-    stable_sort(setLeft.begin(), setLeft.end(), comparePoints);
-    stable_sort(setRight.begin(), setRight.end(), comparePoints);
+    int indexA = hullA.size() - 1, indexB = 0;
+    int upperA, lowerA, upperB, lowerB, nextA, nextB;
 
-    int rightmostLeftIndex = setLeft.size() - 1;
-    int leftmostRightIndex = 0;
+    currentPoint = hullA[hullA.size() - 1]; // Rightmost point in hullA
+    stable_sort(hullA.begin(), hullA.end() - 1);
+    currentPoint = hullB[0];
+    stable_sort(hullB.begin() + 1, hullB.end());
 
-    // Find lower tangent
-    pair<int, int> lowerTangent = FindLowerTangent(
-        setLeft, setRight, rightmostLeftIndex, leftmostRightIndex);
-    int lowerLeftIndex = lowerTangent.first;
-    int lowerRightIndex = lowerTangent.second;
+    nextA = (indexA == hullA.size() - 1) ? 0 : indexA + 1;
+    nextB = (indexB == 0) ? hullB.size() - 1 : indexB - 1;
 
-    // Find upper tangent
-    pair<int, int> upperTangent = FindUpperTangent(
-        setLeft, setRight, rightmostLeftIndex, leftmostRightIndex);
-    int upperLeftIndex = upperTangent.first;
-    int upperRightIndex = upperTangent.second;
+    while (ccw(hullB[indexB], hullA[indexA], hullA[nextA]) == -1 ||
+           ccw(hullA[indexA], hullB[indexB], hullB[nextB]) == 1)
+    {
+        if (ccw(hullB[indexB], hullA[indexA], hullA[nextA]) == -1)
+            indexA = nextA;
+        else
+            indexB = nextB;
 
-    // Merge hull points between tangents
-    AddHullPoints(setLeft, mergedHull, lowerLeftIndex, upperLeftIndex);
-    AddHullPoints(setRight, mergedHull, upperRightIndex, lowerRightIndex);
+        nextA = (indexA == hullA.size() - 1) ? 0 : indexA + 1;
+        nextB = (indexB == 0) ? hullB.size() - 1 : indexB - 1;
+    }
+
+    if (procedure == true) {
+        canvas->MoveTo(hullA[indexA].x, hullA[indexA].y);
+        canvas->LineTo(hullB[indexB].x, hullB[indexB].y);
+        MessageDlgPos(
+            "Lower Tangent", mtCustom, TMsgDlgButtons() << mbOK, 0, 800, 500);
+    }
+
+    upperA = indexA;
+    upperB = indexB;
+
+    indexA = hullA.size() - 1;
+    indexB = 0;
+
+    nextB = (indexB == hullB.size() - 1) ? 0 : indexB + 1;
+    nextA = (indexA == 0) ? hullA.size() - 1 : indexA - 1;
+
+    while (ccw(hullB[indexB], hullA[indexA], hullA[nextA]) == 1 ||
+           ccw(hullA[indexA], hullB[indexB], hullB[nextB]) == -1)
+    {
+        if (ccw(hullB[indexB], hullA[indexA], hullA[nextA]) == 1)
+            indexA = nextA;
+        else
+            indexB = nextB;
+
+        nextB = (indexB == hullB.size() - 1) ? 0 : indexB + 1;
+        nextA = (indexA == 0) ? hullA.size() - 1 : indexA - 1;
+    }
+
+    if (procedure == true) {
+        canvas->MoveTo(hullA[indexA].x, hullA[indexA].y);
+        canvas->LineTo(hullB[indexB].x, hullB[indexB].y);
+        MessageDlgPos(
+            "Upper tangent", mtCustom, TMsgDlgButtons() << mbOK, 0, 800, 500);
+    }
+
+    lowerA = indexA;
+    lowerB = indexB;
+
+    if (upperA > lowerA) {
+        for (int i = upperA; i < hullA.size(); i++)
+            mergedHull.push_back(hullA[i]);
+        for (int i = 0; i <= lowerA; i++)
+            mergedHull.push_back(hullA[i]);
+    } else {
+        for (int i = upperA; i <= lowerA; i++)
+            mergedHull.push_back(hullA[i]);
+    }
+
+    if (lowerB > upperB) {
+        for (int j = lowerB; j < hullB.size(); j++)
+            mergedHull.push_back(hullB[j]);
+        for (int j = 0; j <= upperB; j++)
+            mergedHull.push_back(hullB[j]);
+    } else {
+        for (int j = lowerB; j <= upperB; j++)
+            mergedHull.push_back(hullB[j]);
+    }
+
+    if (procedure == true) {
+        App->Image->Picture->Bitmap->Assign(images.top());
+        DrawPolygon(mergedHull, canvas, clRed);
+        MessageDlgPos("The final CH obtained by merging", mtCustom,
+            TMsgDlgButtons() << mbOK, 0, 800, 500);
+    }
 
     return mergedHull;
-}
-
-pair<int, int> FindLowerTangent(vector<MyPoint> &setLeft,
-    vector<MyPoint> &setRight, int leftIndex, int rightIndex)
-{
-    int prevLeftIndex, nextRightIndex;
-
-    do {
-        // Move to the previous point in setLeft (clockwise)
-        prevLeftIndex = (leftIndex == 0) ? setLeft.size() - 1 : leftIndex - 1;
-
-        // Move to the next point in setRight (counterclockwise)
-        nextRightIndex = (rightIndex + 1) % setRight.size();
-
-        // If moving prevLeftIndex results in a lower tangent, update `leftIndex`
-        if (ccw(setRight[rightIndex], setLeft[leftIndex],
-                setLeft[prevLeftIndex]) == -1)
-            leftIndex = prevLeftIndex;
-
-        // If moving nextRightIndex results in a lower tangent, update `rightIndex`
-        if (ccw(setLeft[leftIndex], setRight[rightIndex],
-                setRight[nextRightIndex]) == 1)
-            rightIndex = nextRightIndex;
-
-    } while (ccw(setRight[rightIndex], setLeft[leftIndex],
-                 setLeft[prevLeftIndex]) == -1 ||
-             ccw(setLeft[leftIndex], setRight[rightIndex],
-                 setRight[nextRightIndex]) == 1);
-
-    return { leftIndex, rightIndex }; // Return final lower tangent points
-}
-
-pair<int, int> FindUpperTangent(vector<MyPoint> &setLeft,
-    vector<MyPoint> &setRight, int leftIndex, int rightIndex)
-{
-    int nextLeftIndex, prevRightIndex;
-
-    do {
-        // Move to the next point in setLeft (counterclockwise)
-        nextLeftIndex = (leftIndex + 1) % setLeft.size();
-
-        // Move to the previous point in setRight (clockwise)
-        prevRightIndex =
-            (rightIndex == 0) ? setRight.size() - 1 : rightIndex - 1;
-
-        // If moving nextLeftIndex results in an upper tangent, update `leftIndex`
-        if (ccw(setRight[rightIndex], setLeft[leftIndex],
-                setLeft[nextLeftIndex]) == 1)
-            leftIndex = nextLeftIndex;
-
-        // If moving prevRightIndex results in an upper tangent, update `rightIndex`
-        if (ccw(setLeft[leftIndex], setRight[rightIndex],
-                setRight[prevRightIndex]) == -1)
-            rightIndex = prevRightIndex;
-
-    } while (ccw(setRight[rightIndex], setLeft[leftIndex],
-                 setLeft[nextLeftIndex]) == 1 ||
-             ccw(setLeft[leftIndex], setRight[rightIndex],
-                 setRight[prevRightIndex]) == -1);
-
-    return { leftIndex, rightIndex }; // Return final upper tangent points
-}
-
-void AddHullPoints(vector<MyPoint> &hull, vector<MyPoint> &mergedHull,
-    int startIndex, int endIndex)
-{
-    int hullSize = hull.size();
-
-    if (startIndex > endIndex) {
-        for (int i = startIndex; i < hullSize; i++)
-            mergedHull.push_back(hull[i]);
-
-        for (int i = 0; i <= endIndex; i++)
-            mergedHull.push_back(hull[i]);
-    } else {
-        // Add points sequentially from `startIndex` to `endIndex`
-        for (int i = startIndex; i <= endIndex; i++)
-            mergedHull.push_back(hull[i]);
-    }
 }
 
 vector<MyPoint> DivideAndConquerHull(vector<MyPoint> points)

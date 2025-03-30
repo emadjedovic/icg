@@ -45,10 +45,9 @@ class TApp : public TForm
 
 vector<MyPoint> points;
 stack<Graphics::TBitmap*> images;
+MyPoint currentPoint;
 
-pair<int, int> FindLowerTangent(vector<MyPoint> &, vector<MyPoint> &, int, int);
-pair<int, int> FindUpperTangent(vector<MyPoint> &, vector<MyPoint> &, int, int);
-void AddHullPoints(vector<MyPoint> &, vector<MyPoint> &, int, int);
+bool operator<(const MyPoint &, const MyPoint &);
 
 vector<MyPoint> MergeHulls(vector<MyPoint>, vector<MyPoint>);
 vector<MyPoint> DivideAndConquerHull(vector<MyPoint>);
