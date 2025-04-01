@@ -83,6 +83,38 @@ int Orientation(MyPoint A, MyPoint B, MyPoint C)
         return 1;
     return 0;
 }
+
+bool PointInTriangle(MyPoint A, MyPoint B, MyPoint C, MyPoint P)
+{
+    int o1 = Orientation(A, B, P);
+    int o2 = Orientation(B, C, P);
+    int o3 = Orientation(C, A, P);
+
+    return o1 == o2 && o2 == o3;
+}
+
+bool PointInPolygon(vector<MyPoint> &convPoly, MyPoint P)
+{
+    if (convPoly.size() < 3)
+        return false;
+
+    MyPoint firstPoint(convPoly[0]);
+
+    int startIndex = 1;
+    int endIndex = convPoly.size() - 1;
+
+    while (endIndex - startIndex > 1) {
+        int middleIndex = (startIndex + endIndex) / 2;
+        if (Orientation(firstPoint, convPoly[middleIndex], P) > 0)
+            endIndex = middleIndex;
+        else
+            startIndex = middleIndex;
+    }
+
+    return PointInTriangle(
+        firstPoint, convPoly[startIndex], convPoly[endIndex], P);
+}
+
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 

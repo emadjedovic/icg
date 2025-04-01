@@ -37,6 +37,13 @@ void __fastcall TICG_app::ImageMouseDown(
             segments.push_back(newSegment);
         }
         second_click = !second_click;
+    } else if (RadioPointInCH->Checked) {
+        if (CH.size() >= 3) {
+            if (PointInPolygon(CH, newPoint))
+                ShowMessage("Inside the Convex Hull!");
+            else
+                ShowMessage("Outside the Convex Hull!");
+        }
     }
 
     points.push_back(newPoint);
@@ -162,6 +169,12 @@ void __fastcall TICG_app::ButtonGiftWrappingClick(TObject* Sender)
     }
 
     DrawPolygon(Image, CH, clRed);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TICG_app::ButtonGrahamScanClick(TObject* Sender)
+{
+    return;
 }
 //---------------------------------------------------------------------------
 

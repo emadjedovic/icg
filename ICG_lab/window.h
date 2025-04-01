@@ -27,6 +27,8 @@ class TICG_app : public TForm
     TButton* ButtonGeneratePoints;
     TRadioButton* RadioAddPoint;
     TRadioButton* RadioAddSegment;
+    TRadioButton *RadioPointInCH;
+    TButton *ButtonGrahamScan;
     void __fastcall ImageMouseDown(
         TObject* Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall ButtonSimplePolygonClick(TObject* Sender);
@@ -34,6 +36,7 @@ class TICG_app : public TForm
     void __fastcall ButtonGiftWrappingClick(TObject* Sender);
     void __fastcall ButtonClearClick(TObject* Sender);
     void __fastcall ButtonGeneratePointsClick(TObject* Sender);
+    void __fastcall ButtonGrahamScanClick(TObject *Sender);
   private: // User declarations
   public: // User declarations
     __fastcall TICG_app(TComponent* Owner);

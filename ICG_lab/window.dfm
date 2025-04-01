@@ -3,7 +3,7 @@ object ICG_app: TICG_app
   Top = 0
   Caption = 'ICG_app'
   ClientHeight = 585
-  ClientWidth = 870
+  ClientWidth = 896
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -64,7 +64,7 @@ object ICG_app: TICG_app
     OnClick = ButtonGiftWrappingClick
   end
   object ButtonClear: TButton
-    Left = 504
+    Left = 783
     Top = 536
     Width = 81
     Height = 33
@@ -111,5 +111,22 @@ object ICG_app: TICG_app
     Color = clWhite
     ParentColor = False
     TabOrder = 7
+  end
+  object RadioPointInCH: TRadioButton
+    Left = 736
+    Top = 208
+    Width = 152
+    Height = 17
+    Caption = 'Point In Convex Hull?'
+    TabOrder = 8
+  end
+  object ButtonGrahamScan: TButton
+    Left = 504
+    Top = 536
+    Width = 113
+    Height = 33
+    Caption = 'Graham Scan'
+    TabOrder = 9
+    OnClick = ButtonGrahamScanClick
   end
 end
