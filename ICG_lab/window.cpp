@@ -174,7 +174,47 @@ void __fastcall TICG_app::ButtonGiftWrappingClick(TObject* Sender)
 
 void __fastcall TICG_app::ButtonGrahamScanClick(TObject* Sender)
 {
-    return;
+CH.clear();
+    if (points.size() < 3)
+        return;
+
+    // leftmost point
+    for (int i = 1; i < points.size(); i++) {
+        if (points[i] < points[0])
+            swap(points[i], points[0]);
+    }
+
+    MyPoint leftmost(points[0]);
+
+    // sort by angle
+    sort(points.begin() + 1, points.end(), [leftmost](MyPoint A, MyPoint B) {
+        return Orientation(leftmost, A, B) < 0;
+    });
+
+    CH.push_back(leftmost);
+    CH.push_back(points[1]);
+
+    int prevIndex = 0;
+    int currIndex = 1;
+
+    for (int i = 2; i < points.size(); i++) {
+        MyPoint nextPoint = points[i];
+
+        if (Orientation(CH[prevIndex], CH[currIndex], nextPoint) < 0)
+            CH.push_back(nextPoint);
+        else {
+            while (Orientation(CH[prevIndex], CH[currIndex], nextPoint) > 0) {
+                CH.pop_back();
+                currIndex--;
+                prevIndex--;
+            }
+            CH.push_back(nextPoint);
+        }
+        currIndex++;
+        prevIndex++;
+    }
+
+    DrawPolygon(Image, CH, clRed);
 }
 //---------------------------------------------------------------------------
 
