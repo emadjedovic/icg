@@ -1,39 +1,30 @@
 //---------------------------------------------------------------------------
 
-#ifndef helperH
-#define helperH
+#ifndef HelperH
+#define HelperH
 
+#include <MyPoint.h>
 #include <set>
 
 using namespace std;
 
-TCanvas* canvas;
+int AreaPoly2(int, const MyPoint[100]);
+bool XOR(bool, bool);
+int remainder(int, int);
+bool firstSubsetofSecond(int[3], int[3]);
 
-struct MyPoint
-{
-    double x, y;
-    int id;
-    MyPoint() : x(0), y(0), id(0) {};
-    MyPoint(double xx, double yy, int idd) : x(xx), y(yy), id(idd) {};
-};
-
-struct MyDiagonal
-{
-    double x, y;
-    MyDiagonal(double xx, double yy) : x(xx), y(yy) {};
-    MyDiagonal() : x(0), y(0) {};
-};
-
-struct MySide
-{
-    MyPoint x1, x2, x3;
-    MySide(MyPoint, MyPoint, MyPoint);
-    MySide();
-    void indexes(int array[3]);
-    void color();
-};
-
-bool isSubset(int a[3], int b[3]);
+bool Diagonal_IE(int, int, int, MyPoint[100]);
+bool Diagonal(int, int, int, MyPoint[100]);
+bool InCone(int, int, int, MyPoint[100]);
+void ClipEar(int, int, MyPoint[100]);
+int remainder(int, int);
+bool firstSubsetofSecond(int a[3], int b[3]);
+/*
+int complement(int[10], int[10]);
+void no_name(MyDiagonal, int[2], int[3]);
+int clear();
+void no_name2(int, MyPoint[500]);
+*/
 
 //---------------------------------------------------------------------------
 #endif

@@ -8,7 +8,10 @@
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
-#include <helper.h>
+#include <Helper.h>
+#include <MyPoint.h>
+#include <MySide.h>
+#include <MyDiagonal.h>
 
 //---------------------------------------------------------------------------
 class TTriangulation : public TForm
@@ -26,35 +29,18 @@ class TTriangulation : public TForm
     void __fastcall ButtonImproveClick(TObject* Sender);
     void __fastcall FormCreate(TObject* Sender);
   private: // User declarations
+    int numPoints;
+    int numDiagonals;
+    int numSides;
+    MyPoint polygon[500];
+    MySide sides[500];
+    MyDiagonal diagonals[500];
+    Graphics::TBitmap* bmp;
+    TCanvas* canvas;
   public: // User declarations
     __fastcall TTriangulation(TComponent* Owner);
+    ~TTriangulation();
 };
-
-int numPoints(0);
-int numDiagonals(0);
-int numSides(0);
-MyPoint polygon[500];
-MySide sides[500];
-MyDiagonal diagonals[500];
-
-int Area2(const MyPoint &, const MyPoint &, const MyPoint &);
-int AreaPoly2(int, const MyPoint[100]);
-bool XOR(bool, bool);
-bool IntersectProp(
-    const MyPoint &, const MyPoint &, const MyPoint &, const MyPoint &);
-bool Left(const MyPoint &, const MyPoint &, const MyPoint &);
-bool LeftOn(const MyPoint &, const MyPoint &, const MyPoint &);
-bool Collinear(const MyPoint &, const MyPoint &, const MyPoint &);
-void SubVector(const MyPoint &, const MyPoint &, MyPoint &);
-int Dot(const MyPoint &, const MyPoint &);
-int Length2(const MyPoint &);
-bool IsPointOnSegment(const MyPoint &, const MyPoint &, const MyPoint &);
-bool Intersect(MyPoint, MyPoint, MyPoint, MyPoint);
-bool Diagonalie(int, int, int, MyPoint[100]);
-bool Diagonal(int, int, int, MyPoint[100]);
-void PointAssign(MyPoint*, MyPoint*);
-bool InCone(int, int, int, MyPoint[100]);
-void ClipEar(int, int, MyPoint[100]);
 
 //---------------------------------------------------------------------------
 extern PACKAGE TTriangulation* Triangulation;

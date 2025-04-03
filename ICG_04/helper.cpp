@@ -2,45 +2,30 @@
 
 #pragma hdrstop
 
-#include "helper.h"
+#include "Helper.h"
 
-MySide::MySide()
+// Returns twice the area of the polygon.
+int AreaPoly2(int n, const MyPoint poly[100])
 {
-    x1 = MyPoint(0, 0, 0);
-    x2 = MyPoint(0, 0, 0);
-    x3 = MyPoint(0, 0, 0);
+    int sum(0);
+
+    // It breaks the n-sided polygon into
+    // (n - 2) triangles, all sharing the first vertex.
+    for (int i = 1; i < n - 1; i++)
+        sum += Area2(poly[0], poly[i], poly[i + 1]);
+
+    return sum;
 }
 
-MySide::MySide(MyPoint xx1, MyPoint xx2, MyPoint xx3)
+bool XOR(bool x, bool y)
 {
-    // first point
-    x1 = MyPoint(xx1.x, xx1.y, xx1.id);
-    // second point
-    x2 = MyPoint(xx2.x, xx2.y, xx2.id);
-    // third point
-    x3 = MyPoint(xx3.x, xx3.y, xx3.id);
+    !x ^ !y;
 }
 
-void MySide::indexes(int array[3])
+int remainder(int a, int b)
 {
-    // passed by reference
-    array[0] = x1.id;
-    array[1] = x2.id;
-    array[2] = x3.id;
-}
-
-void MySide::color()
-{
-    // using built-in TPoint class becauce of canvas->Polygon method
-    TPoint tPoint[3];
-    tPoint[0] = Point(x1.x, x1.y);
-    tPoint[1] = Point(x2.x, x2.y);
-    tPoint[2] = Point(x3.x, x3.y);
-
-    canvas->Brush->Color =
-        (TColor)RGB(50 + random(200), 50 + random(200), 50 + random(200));
-    canvas->Polygon(tPoint, 2);
-}
+    return a - (a / b) * b;
+};
 
 bool firstSubsetofSecond(int a[3], int b[3])
 {
@@ -54,6 +39,65 @@ bool firstSubsetofSecond(int a[3], int b[3])
     }
     return true;
 }
+
+// (vi, vj) is a proper internal or external diagonal of a polygon
+bool Diagonal_IE(int i, int j, int n, MyPoint poly[100])
+{
+    for (int k = 0; k < n; k++) {
+        int k1 = (k + 1) % n;
+        // skip edges incident to vi or vj
+        bool incident = (k == i) || (k == j) || (k1 == i) || (k1 == j);
+        if (!incident) {
+            // Check if the diagonal intersects the edge (poly[k], poly[k1])
+            if (Intersect(poly[i], poly[j], poly[k], poly[k1]))
+                return false;
+        }
+    }
+    return true;
+}
+
+/*
+	the diagonal (i,j) is striclty internal to the
+	polygon in the neighborhood of the i endpoint
+*/
+bool InCone(int i, int j, int n, MyPoint poly[100])
+{
+    int next = (i + 1) % n;
+    int prev = (i - 1 + n) % n;
+
+    // Check if poly[i] is a convex vertex
+    bool isConvex = Left(poly[prev], poly[i], poly[next]);
+
+    if (isConvex) {
+        // the diagonal (i, j) should lie within the cone
+        return Left(poly[i], poly[j], poly[prev]) &&
+               Left(poly[j], poly[i], poly[next]);
+    } else {
+        // the diagonal (i, j) should lie outside the cone
+        return !(Left(poly[i], poly[j], poly[next]) &&
+                 Left(poly[j], poly[i], poly[prev]));
+    }
+}
+
+// (vi,vj) a proper internal diagonal
+bool Diagonal(int i, int j, int n, MyPoint poly[100])
+{
+    return InCone(i, j, n, poly) && Diagonal_IE(i, j, n, poly);
+}
+
+void ClipEar(int i, int n, MyPoint poly[100])
+{
+    for (int k = i; k < n - 1; k++)
+        poly[k] = poly[k + 1];
+}
+
+
+/*
+int complement(int[10], int[10]);
+void no_name(MyDiagonal, int[2], int[3]);
+int clear();
+void no_name2(int, MyPoint[500]);
+*/
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
