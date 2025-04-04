@@ -19,9 +19,10 @@ bool InCone(int, int, int, MyPoint[100]);
 void ClipEar(int, int, MyPoint[100]);
 int remainder(int, int);
 bool firstSubsetofSecond(int a[3], int b[3]);
+
+int missingElement(int[10], int[10]);
+void endpoints(MyDiagonal, int[2], int[3]);
 /*
-int complement(int[10], int[10]);
-void no_name(MyDiagonal, int[2], int[3]);
 int clear();
 void no_name2(int, MyPoint[500]);
 */

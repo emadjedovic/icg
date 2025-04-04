@@ -91,10 +91,44 @@ void ClipEar(int i, int n, MyPoint poly[100])
         poly[k] = poly[k + 1];
 }
 
+//  find the first element in array a that is not present in array b
+int missingElement(int[10], int[10])
+{
+    int elementNotContained;
+    for (int i = 0; i < 3; i++) {
+        elementNotContained = true;
+        for (int j = 0; j < 2; j++) {
+            if (a[i] == b[j])
+                elementNotContained = false;
+        }
+        if (elementNotContained)
+            return a[i];
+    }
+
+    return -1; // Return -1 if no element in 'a' is missing from 'b'
+}
+
+// rename sides to ears???
+void endpoints(MyDiagonal diag, int thirdVertices[2], int sideIndices[3])
+{
+    int diagonalPoints[] = { diag.x, diag.y };
+    int sideVertices[3]; // Holds vertices of a polygon side
+    int foundCount = 0; // Tracks how many matching sides were found
+
+    for (int i = 0; i < numSides; i++) {
+        sides[i].indexes(
+            sideVertices); // Populate with the vertices of the current side
+
+        if (isSubset(diagonalPoints, sideVertices, 3))
+        { // Check if diagonal is part of the side
+            thirdVertices[foundCount] = missingElement(
+                sideVertices, diagonalPoints); // Find missing vertex
+            sideIndices[foundCount++] = i; // Store the index of this side
+        }
+    }
+}
 
 /*
-int complement(int[10], int[10]);
-void no_name(MyDiagonal, int[2], int[3]);
 int clear();
 void no_name2(int, MyPoint[500]);
 */
