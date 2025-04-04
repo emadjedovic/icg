@@ -1,13 +1,13 @@
 //---------------------------------------------------------------------------
 
-#ifndef MyDiagonalH
-#define MyDiagonalH
+#ifndef DiagonalH
+#define DiagonalH
 
-struct MyDiagonal
+struct Diagonal
 {
-    double x, y;
-    MyDiagonal(double xx, double yy) : x(xx), y(yy) {};
-    MyDiagonal() : x(0), y(0) {};
+    int x, y;
+    Diagonal(int xx, int yy) : x(xx), y(yy) {};
+    Diagonal() : x(0), y(0) {};
 };
 
 //---------------------------------------------------------------------------

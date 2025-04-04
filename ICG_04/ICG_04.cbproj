@@ -179,6 +179,14 @@
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
     </PropertyGroup>
     <ItemGroup>
+        <CppCompile Include="Diagonal.cpp">
+            <DependentOn>Diagonal.h</DependentOn>
+            <BuildOrder>6</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="Ear.cpp">
+            <DependentOn>Ear.h</DependentOn>
+            <BuildOrder>5</BuildOrder>
+        </CppCompile>
         <CppCompile Include="Helper.cpp">
             <DependentOn>Helper.h</DependentOn>
             <BuildOrder>3</BuildOrder>
@@ -190,17 +198,9 @@
             <BuildOrder>1</BuildOrder>
             <PCH>true</PCH>
         </PCHCompile>
-        <CppCompile Include="MyDiagonal.cpp">
-            <DependentOn>MyDiagonal.h</DependentOn>
-            <BuildOrder>6</BuildOrder>
-        </CppCompile>
         <CppCompile Include="MyPoint.cpp">
             <DependentOn>MyPoint.h</DependentOn>
             <BuildOrder>4</BuildOrder>
-        </CppCompile>
-        <CppCompile Include="MySide.cpp">
-            <DependentOn>MySide.h</DependentOn>
-            <BuildOrder>5</BuildOrder>
         </CppCompile>
         <CppCompile Include="Window.cpp">
             <Form>Triangulation</Form>
