@@ -2,6 +2,6 @@
 
 #pragma hdrstop
 
-#include "Diagonal.h"
+#include "MyDiagonal.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)

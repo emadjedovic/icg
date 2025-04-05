@@ -10,8 +10,8 @@
 #include <Vcl.ExtCtrls.hpp>
 #include <Helper.h>
 #include <MyPoint.h>
-#include <Ear.h>
-#include <Diagonal.h>
+#include <MyEar.h>
+#include <MyDiagonal.h>
 #include <set>
 
 using namespace std;
@@ -37,29 +37,31 @@ class TTriangulation : public TForm
     ~TTriangulation();
 };
 
+int numPoints;
+int numDiagonals;
+int numEars;
+MyPoint polygon[500];
+MyEar ears[500];
+MyDiagonal diagonals[500];
+Graphics::TBitmap* bmp;
+TCanvas* canvas;
+
 int AreaPoly2(int, const MyPoint[100]);
 bool XOR(bool, bool);
 int remainder(int, int);
 bool firstSubsetofSecond(int[3], int[3]);
 
 bool Diagonal_IE(int, int, int, MyPoint[100]);
-bool Diagonal(int, int, int, MyPoint[100]);
+bool iSDiagonal(int, int, int, MyPoint[100]);
 bool InCone(int, int, int, MyPoint[100]);
 void ClipEar(int, int, MyPoint[100]);
 
 int missingElement(int[10], int[10]);
 
-void endpoints(struct Diagonal diag, int[2], int[3]);
+void endpoints(MyDiagonal diag, int[2], int[3]);
 void triangulate(int, MyPoint[500]);
 int clear();
-int numPoints;
-int numDiagonals;
-int numEars;
-MyPoint polygon[500];
-Ear ears[500];
-Diagonal diagonals[500];
-Graphics::TBitmap* bmp;
-TCanvas* canvas;
+
 
 //---------------------------------------------------------------------------
 extern PACKAGE TTriangulation* Triangulation;

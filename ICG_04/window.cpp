@@ -86,7 +86,7 @@ bool InCone(int i, int j, int n, MyPoint poly[100])
 }
 
 // (vi,vj) a proper internal diagonal
-bool Diagonal(int i, int j, int n, MyPoint poly[100])
+bool isDiagonal(int i, int j, int n, MyPoint poly[100])
 {
     return InCone(i, j, n, poly) && Diagonal_IE(i, j, n, poly);
 }
@@ -114,7 +114,7 @@ int missingElement(int a[10], int b[10])
     return -1; // Return -1 if no element in 'a' is missing from 'b'
 }
 
-void endpoints(struct Diagonal diag, int thirdVertices[2], int earIndices[3])
+void endpoints(MyDiagonal diag, int thirdVertices[2], int earIndices[3])
 {
     int diagonalPoints[] = { diag.x, diag.y };
     int earVertices[3]; // Holds vertices of a polygon ear
@@ -148,13 +148,13 @@ void triangulate(int numVertices, MyPoint inputPolygon[500])
             i += 2;
 
         // Try to clip ears (a triangle that is a valid diagonal)
-        while (Diagonal(i - 2, i, remainingVertices, polygon) == TRUE) {
+        while (isDiagonal(i - 2, i, remainingVertices, polygon) == TRUE) {
             // Add a new diagonal
             diagonals[numDiagonals++] =
-                Diagonal(polygon[i].id, polygon[i - 2].id);
+                MyDiagonal(polygon[i].id, polygon[i - 2].id);
 
             // Save the triangle as a new edge
-            ears[numEars++] = Ear(polygon[i - 2], polygon[i - 1], polygon[i]);
+            ears[numEars++] = MyEar(polygon[i - 2], polygon[i - 1], polygon[i]);
 
             // Color the new triangle/edge
             ears[numEars - 1].color(canvas);
@@ -172,8 +172,8 @@ void triangulate(int numVertices, MyPoint inputPolygon[500])
     }
 
     // Add the final triangle
-    ears[numEars++] = Ear(polygon[0], polygon[1], polygon[2]);
-    Ear(polygon[0], polygon[1], polygon[2]).color(canvas);
+    ears[numEars++] = MyEar(polygon[0], polygon[1], polygon[2]);
+    MyEar(polygon[0], polygon[1], polygon[2]).color(canvas);
 }
 
 int clear()
@@ -237,7 +237,7 @@ int clear()
         if (replacementRadius < originalRadius)
             intersectsCircle = 1;
 
-        bool isValid = Diagonal(
+        bool isValid = isDiagonal(
             replacementVertices[1], replacementVertices[0], numPoints, polygon);
         if (isValid)
             shouldReplace = 1;
@@ -248,9 +248,9 @@ int clear()
             diagonals[i].y = replacementVertices[1];
 
             // Update affected edges
-            ears[affectedEdges[0]] = Ear(polygon[replacementVertices[0]],
+            ears[affectedEdges[0]] = MyEar(polygon[replacementVertices[0]],
                 polygon[replacementVertices[1]], polygon[originalStart]);
-            ears[affectedEdges[1]] = Ear(polygon[replacementVertices[0]],
+            ears[affectedEdges[1]] = MyEar(polygon[replacementVertices[0]],
                 polygon[replacementVertices[1]], polygon[originalEnd]);
 
             // Recolor the updated edges
@@ -312,7 +312,7 @@ void __fastcall TTriangulation::ImageMouseDown(
 void __fastcall TTriangulation::ButtonTriangulationClick(TObject* Sender)
 {
     int how_many;
-    struct Diagonal array[500];
+    MyDiagonal array[500];
     triangulate(numPoints, polygon);
     canvas->MoveTo(polygon[0].x, polygon[0].y);
     canvas->LineTo(polygon[numPoints - 1].x, polygon[numPoints - 1].y);

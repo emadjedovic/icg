@@ -1,15 +1,15 @@
 //---------------------------------------------------------------------------
 
-#ifndef EarH
-#define EarH
+#ifndef MyEarH
+#define MyEarH
 
 #include <MyPoint.h>
 
-struct Ear
+struct MyEar
 {
     MyPoint x1, x2, x3;
-    Ear(MyPoint, MyPoint, MyPoint);
-    Ear();
+    MyEar(MyPoint, MyPoint, MyPoint);
+    MyEar();
     void indexes(int array[3]);
     void color(TCanvas*);
 };

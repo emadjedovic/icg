@@ -187,10 +187,6 @@
             <DependentOn>Ear.h</DependentOn>
             <BuildOrder>5</BuildOrder>
         </CppCompile>
-        <CppCompile Include="Helper.cpp">
-            <DependentOn>Helper.h</DependentOn>
-            <BuildOrder>3</BuildOrder>
-        </CppCompile>
         <CppCompile Include="ICG_04.cpp">
             <BuildOrder>0</BuildOrder>
         </CppCompile>

@@ -2,16 +2,16 @@
 
 #pragma hdrstop
 
-#include "Ear.h"
+#include "MyEar.h"
 
-Ear::Ear()
+MyEar::MyEar()
 {
     x1 = MyPoint(0, 0, 0);
     x2 = MyPoint(0, 0, 0);
     x3 = MyPoint(0, 0, 0);
 }
 
-Ear::Ear(MyPoint xx1, MyPoint xx2, MyPoint xx3)
+MyEar::MyEar(MyPoint xx1, MyPoint xx2, MyPoint xx3)
 {
     // first point
     x1 = MyPoint(xx1.x, xx1.y, xx1.id);
@@ -21,7 +21,7 @@ Ear::Ear(MyPoint xx1, MyPoint xx2, MyPoint xx3)
     x3 = MyPoint(xx3.x, xx3.y, xx3.id);
 }
 
-void Ear::indexes(int array[3])
+void MyEar::indexes(int array[3])
 {
     // passed by reference
     array[0] = x1.id;
@@ -29,7 +29,7 @@ void Ear::indexes(int array[3])
     array[2] = x3.id;
 }
 
-void Ear::color(TCanvas* canvas)
+void MyEar::color(TCanvas* canvas)
 {
     // using built-in TPoint class becauce of canvas->Polygon method
     TPoint tPoint[3];
