@@ -44,7 +44,13 @@ void __fastcall TICG_app::ImageMouseDown(
             else
                 ShowMessage("Outside the Convex Hull!");
         }
-    }
+    } else if (RadioDrawTangents->Checked) {
+                   if(CH.size()>=3){
+
+
+                   }
+
+           }
 
     points.push_back(newPoint);
     newPoint.Draw(Image);
