@@ -135,7 +135,116 @@ bool middlePointOnGreaterArc(MyPoint T, MyPoint S, MyPoint next)
 
 pair<int, int> findTangents(MyPoint T, vector<MyPoint> &conv)
 {
-    return { 0, 0 };
+    int n = conv.size();
+    int left_i = -1;
+    int right_i = -1;
+    int start = 0;
+    int end = n - 1;
+
+    // left tangent
+
+    while (end-start > 1) {
+        int middle_i = (start + end) / 2;
+        int prev_i = (middle_i + n - 1) % n;
+        int next_i = (middle_i + 1) % n;
+
+        MyPoint prev = conv[prev_i];
+        MyPoint next = conv[next_i];
+        MyPoint middle = conv[middle_i];
+
+        if (isLeftTangent(T, middle, prev, next)) {
+            left_i = middle_i;
+            break;
+        }
+
+        if (middlePointOnGreaterArc(T, middle, next)) {
+            if (Orientation(T, middle, conv[start]) > 0 &&
+                Orientation(T, conv[start], conv[(start + n - 1) % n]) > 0)
+            {
+                // first case
+                start = middle_i;
+            } else {
+                // second case
+                end = middle_i;
+            }
+        } else {
+            // smaller arc
+            if (Orientation(T, middle, conv[start]) > 0 &&
+                Orientation(T, conv[start], conv[(start + n - 1) % n]) < 0)
+            {
+                // first case
+                end = middle_i;
+            } else {
+                // second case
+                start = middle_i;
+            }
+        }
+    }
+
+    if (left_i == -1) {
+        MyPoint before_start = conv[(start + n - 1) % n];
+        MyPoint after_start = conv[(start + 1) % n];
+        if (isLeftTangent(T, conv[start], before_start, after_start)) {
+            left_i = start;
+        } else {
+            left_i = end;
+        }
+    }
+
+    start = 0;
+    end = n - 1;
+
+    // right tangent
+
+    while (end-start > 1) {
+        int middle_i = (start + end) / 2;
+        int prev_i = (middle_i + n - 1) % n;
+        int next_i = (middle_i + 1) % n;
+
+        MyPoint prev = conv[prev_i];
+        MyPoint next = conv[next_i];
+        MyPoint middle = conv[middle_i];
+
+        if (isRightTangent(T, middle, prev, next)) {
+            right_i = middle_i;
+            break;
+        }
+
+        if (middlePointOnGreaterArc(T, middle, next)) {
+            if (Orientation(T, middle, conv[start]) < 0 &&
+                Orientation(T, conv[start], conv[(start + n - 1) % n]) > 0)
+            {
+                // first case
+                end = middle_i;
+            } else {
+                // second case
+                start = middle_i;
+            }
+        } else {
+            // smaller arc
+            if (Orientation(T, middle, conv[start]) < 0 &&
+                Orientation(T, conv[start], conv[(start + n - 1) % n]) < 0)
+            {
+                // first case
+                start = middle_i;
+            } else {
+                // second case
+                end = middle_i;
+            }
+        }
+    }
+
+    if (right_i == -1) {
+        MyPoint before_start = conv[(start + n - 1) % n];
+        MyPoint after_start = conv[(start + 1) % n];
+        if (isRightTangent(T, conv[start], before_start, after_start)) {
+            right_i = start;
+        } else {
+            right_i = end;
+        }
+    }
+
+    return { left_i, right_i };
 }
 
 //---------------------------------------------------------------------------
