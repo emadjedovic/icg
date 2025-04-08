@@ -44,6 +44,16 @@ void __fastcall TICG_app::ImageMouseDown(
             else
                 ShowMessage("Outside the Convex Hull!");
         }
+    } else if (RadioDrawTangents->Checked) {
+        if (CH.size() >= 3) {
+            pair<int, int> tangents = findTangents(newPoint, CH);
+            int left_i = tangents.first;
+            int right_i = tangents.second;
+            if (left_i != -1)
+                MySegment(newPoint, CH[left_i]).Draw(Image);
+            if (right_i != -1)
+                MySegment(newPoint, CH[right_i]).Draw(Image);
+        }
     }
 
     points.push_back(newPoint);
@@ -174,7 +184,7 @@ void __fastcall TICG_app::ButtonGiftWrappingClick(TObject* Sender)
 
 void __fastcall TICG_app::ButtonGrahamScanClick(TObject* Sender)
 {
-CH.clear();
+    CH.clear();
     if (points.size() < 3)
         return;
 
@@ -218,9 +228,41 @@ CH.clear();
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TICG_app::ButtonIncrementalConvexClick(TObject *Sender)
+void __fastcall TICG_app::ButtonIncrementalConvexClick(TObject* Sender)
 {
-return;
+    if (points.size() < 3)
+        return;
+
+    // we need ccw orientation
+    if (Orientation(points[0], points[1], points[2]) > 0)
+        swap(points[1], points[2]);
+
+    CH = { points[0], points[1], points[2] };
+
+    int n = points.size();
+
+    for (int i = 3; i < n; i++) {
+        MyPoint T = points[i]; // the next point
+        if (PointInPolygon(CH, T))
+            continue;
+        else {
+            pair<int, int> tangents = findTangents(T, CH);
+            int l = tangents.first;
+            int r = tangents.second;
+
+            if (r < l) {
+                CH.erase(CH.begin() + r + 1, CH.begin() + l);
+                CH.insert(CH.begin() + r + 1, T);
+            } else {
+                CH.erase(CH.begin() + r + 1, CH.end());
+                if (l != 0)
+                    CH.erase(CH.begin(), CH.begin() + l);
+                CH.insert(CH.begin(), T);
+            }
+        }
+    }
+
+    DrawPolygon(Image, CH, clRed);
 }
 //---------------------------------------------------------------------------
 

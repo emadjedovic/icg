@@ -115,6 +115,29 @@ bool PointInPolygon(vector<MyPoint> &convPoly, MyPoint P)
         firstPoint, convPoly[startIndex], convPoly[endIndex], P);
 }
 
+// assuming ccw point enumeration
+bool isLeftTangent(MyPoint T, MyPoint S, MyPoint prev, MyPoint next)
+{
+    // both neighbours underneath
+    return Orientation(T, S, prev) < 0 && Orientation(T, S, next) < 0;
+}
+
+bool isRightTangent(MyPoint T, MyPoint S, MyPoint prev, MyPoint next)
+{
+    // both neighbours above
+    return Orientation(T, S, prev) > 0 && Orientation(T, S, next) > 0;
+}
+
+bool middlePointOnGreaterArc(MyPoint T, MyPoint S, MyPoint next)
+{
+    return Orientation(T, S, next) < 0;
+}
+
+pair<int, int> findTangents(MyPoint T, vector<MyPoint> &conv)
+{
+    return { 0, 0 };
+}
+
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 

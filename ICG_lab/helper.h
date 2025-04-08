@@ -30,6 +30,7 @@ struct MySegment
     void Draw(TImage*, TColor = clBlack, int = 3);
 };
 
+pair<int,int> findTangents(MyPoint, vector<MyPoint>&);
 void DrawPolygon(TImage*, const vector<MyPoint> &, TColor = clBlue);
 bool PointInTriangle(MyPoint, MyPoint, MyPoint, MyPoint);
 bool PointInPolygon(vector<MyPoint> &, MyPoint);
