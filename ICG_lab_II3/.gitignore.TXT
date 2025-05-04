@@ -1,0 +1,65 @@
+# Build results
+[Bb]uild/
+[Dd]ebug*/
+[Rr]elease*/
+x64/
+x86/
+*.obj
+*.pdb
+*.ilk
+*.log
+*.tlog
+*.ipch
+*.pch
+*.aps
+*.ncb
+*.suo
+*.user
+*.userosscache
+*.sdf
+*.opensdf
+*.VC.db
+
+# Visual Studio cache files
+.vs/
+
+# Temporary files
+*.tmp
+*.bak
+*.cache
+*.db
+
+# Auto-generated files
+*.idb
+*.res
+*.manifest
+
+# Output binaries
+*.exe
+*.dll
+*.lib
+*.exp
+
+# Precompiled header files
+*.gch
+
+# CMake or other meta-build systems
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Ignore compiled resources
+*.rsc
+
+# Ignore MFC ClassWizard .clw files (optional)
+*.clw
+
+# Ignore IPCH for Intellisense
+*.ipch
+
+# Ignore project upgrade backup
+UpgradeLog*.XML
+
+# Ignore environment settings for some versions
+*.VC.VC.opendb
