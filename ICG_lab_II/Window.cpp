@@ -27,6 +27,17 @@ void Window::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_CLEAR, CButtonClear);
+	DDX_Control(pDX, IDC_SIMPLE_POLYGON, CButtonSimplePolygon);
+	DDX_Control(pDX, IDC_SEGMENTS_INTERSECT, CButtonSegmentsIntersect);
+	DDX_Control(pDX, IDC_GIFT_WRAPPING, CButtonGiftWrapping);
+	DDX_Control(pDX, IDC_GRAHAM, CButtonGraham);
+	DDX_Control(pDX, IDC_INCREMENTAL, CButtonIncremental);
+	DDX_Control(pDX, IDC_GENERATE_POINTS, CButtonGeneratePoints);
+	DDX_Control(pDX, IDC_NUM_POINTS, CEditNumPoints);
+	DDX_Control(pDX, IDC_DRAW_TANGENTS, CButtonDrawTangents);
+	DDX_Control(pDX, IDC_POINT_IN_CH, CButtonPointInCH);
+	DDX_Control(pDX, IDC_ADD_SEGMENT, CButtonAddSegment);
+	DDX_Control(pDX, IDC_ADD_POINT, CButtonAddPoint);
 }
 
 BEGIN_MESSAGE_MAP(Window, CDialogEx)

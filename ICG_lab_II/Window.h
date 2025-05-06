@@ -35,6 +35,19 @@ protected:
 public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnBnClickedClear();
+	
+	CButton CButtonSimplePolygon;
+	CButton CButtonSegmentsIntersect;
+	CButton CButtonGiftWrapping;
+	CButton CButtonGraham;
+	CButton CButtonIncremental;
+
+	CEdit CEditNumPoints;
+	CButton CButtonGeneratePoints;
+	CButton CButtonDrawTangents;
+	CButton CButtonPointInCH;
+	CButton CButtonAddSegment;
+	CButton CButtonAddPoint;
+
 	CButton CButtonClear;
-	afx_msg void OnBnClickedButton1();
 };
