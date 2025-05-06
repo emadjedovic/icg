@@ -25,7 +25,6 @@ public:
 // Implementation
 protected:
 	HICON m_hIcon;
-	std::vector<MyPoint> points;
 
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
@@ -58,4 +57,12 @@ public:
 	CButton CButtonAddPoint;
 
 	CButton CButtonClear;
+
+	//__fastcall TICG_app(TComponent* Owner);
+	void ClearScreen();
+
+	std::vector<MyPoint> points;
+	//std::vector<MySegment> segments;
+	std::vector<MyPoint> CH;
+	bool second_click = false;
 };

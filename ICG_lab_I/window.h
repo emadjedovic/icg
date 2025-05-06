@@ -19,18 +19,21 @@ class TICG_app : public TForm
 {
   __published: // IDE-managed Components
     TImage* Image;
+
     TButton* ButtonSimplePolygon;
     TButton* ButtonDoSegmentsIntersect;
     TButton* ButtonGiftWrapping;
     TButton* ButtonClear;
+    TButton *ButtonGrahamScan;
+    TButton *ButtonIncrementalConvex;
+
     TEdit* EditGeneratePoints;
     TButton* ButtonGeneratePoints;
     TRadioButton* RadioAddPoint;
     TRadioButton* RadioAddSegment;
     TRadioButton *RadioPointInCH;
-    TButton *ButtonGrahamScan;
     TRadioButton *RadioDrawTangents;
-    TButton *ButtonIncrementalConvex;
+
     void __fastcall ImageMouseDown(
         TObject* Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall ButtonSimplePolygonClick(TObject* Sender);
@@ -40,8 +43,10 @@ class TICG_app : public TForm
     void __fastcall ButtonGeneratePointsClick(TObject* Sender);
     void __fastcall ButtonGrahamScanClick(TObject *Sender);
     void __fastcall ButtonIncrementalConvexClick(TObject *Sender);
+
   private: // User declarations
   public: // User declarations
+
     __fastcall TICG_app(TComponent* Owner);
     void ClearScreen();
 
