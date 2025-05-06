@@ -36,4 +36,5 @@ public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnBnClickedClear();
 	CButton CButtonClear;
+	afx_msg void OnBnClickedButton1();
 };
