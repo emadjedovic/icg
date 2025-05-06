@@ -42,8 +42,16 @@ public:
 	CButton CButtonGraham;
 	CButton CButtonIncremental;
 
+	afx_msg void OnBnClickedSimplePolygon();
+	afx_msg void OnBnClickedSegmentsIntersect();
+	afx_msg void OnBnClickedGiftWrapping();
+	afx_msg void OnBnClickedGraham();
+	afx_msg void OnBnClickedIncremental();
+
 	CEdit CEditNumPoints;
 	CButton CButtonGeneratePoints;
+	afx_msg void OnBnClickedGeneratePoints();
+
 	CButton CButtonDrawTangents;
 	CButton CButtonPointInCH;
 	CButton CButtonAddSegment;

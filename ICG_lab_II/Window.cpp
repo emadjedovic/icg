@@ -45,6 +45,12 @@ BEGIN_MESSAGE_MAP(Window, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_WM_LBUTTONDOWN()
 	ON_BN_CLICKED(IDC_CLEAR, &Window::OnBnClickedClear)
+	ON_BN_CLICKED(IDC_SIMPLE_POLYGON, &Window::OnBnClickedSimplePolygon)
+	ON_BN_CLICKED(IDC_SEGMENTS_INTERSECT, &Window::OnBnClickedSegmentsIntersect)
+	ON_BN_CLICKED(IDC_GIFT_WRAPPING, &Window::OnBnClickedGiftWrapping)
+	ON_BN_CLICKED(IDC_GRAHAM, &Window::OnBnClickedGraham)
+	ON_BN_CLICKED(IDC_INCREMENTAL, &Window::OnBnClickedIncremental)
+	ON_BN_CLICKED(IDC_GENERATE_POINTS, &Window::OnBnClickedGeneratePoints)
 END_MESSAGE_MAP()
 
 
@@ -123,4 +129,34 @@ void Window::OnBnClickedClear()
 {
 	points.clear();
 	Invalidate();
+}
+
+void Window::OnBnClickedSimplePolygon()
+{
+	// TODO: Add your control notification handler code here
+}
+
+void Window::OnBnClickedSegmentsIntersect()
+{
+	// TODO: Add your control notification handler code here
+}
+
+void Window::OnBnClickedGiftWrapping()
+{
+	// TODO: Add your control notification handler code here
+}
+
+void Window::OnBnClickedGraham()
+{
+	// TODO: Add your control notification handler code here
+}
+
+void Window::OnBnClickedIncremental()
+{
+	// TODO: Add your control notification handler code here
+}
+
+void Window::OnBnClickedGeneratePoints()
+{
+	// TODO: Add your control notification handler code here
 }
