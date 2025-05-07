@@ -149,9 +149,50 @@ void Window::AddPoint(int x, int y)
 
 void Window::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	AddPoint(point.x, point.y);
+	MyPoint newPoint(point.x, point.y);
+	CClientDC dc(this);
+
+	if (CButtonAddSegment.GetCheck() == BST_CHECKED)
+	{
+		if (second_click)
+		{
+			MySegment newSegment(points.back(), newPoint);
+			newSegment.Draw(dc);
+			segments.push_back(newSegment);
+		}
+		second_click = !second_click;
+	}
+	else if (CButtonPointInCH.GetCheck() == BST_CHECKED)
+	{
+		if (CH.size() >= 3)
+		{
+			if (PointInPolygon(CH, newPoint))
+				AfxMessageBox(_T("Inside the Convex Hull!"));
+			else
+				AfxMessageBox(_T("Outside the Convex Hull!"));
+		}
+	}
+	else if (CButtonDrawTangents.GetCheck() == BST_CHECKED)
+	{
+		if (CH.size() >= 3)
+		{
+			std::pair<int, int> tangents = findTangents(newPoint, CH);
+			int left_i = tangents.first;
+			int right_i = tangents.second;
+
+			if (left_i != -1)
+				MySegment(newPoint, CH[left_i]).Draw(dc);
+			if (right_i != -1)
+				MySegment(newPoint, CH[right_i]).Draw(dc);
+		}
+	}
+
+	points.push_back(newPoint);
+	newPoint.Draw(dc);
+
 	CDialogEx::OnLButtonDown(nFlags, point);
 }
+
 
 void Window::ClearScreen()
 {
@@ -254,12 +295,82 @@ void Window::OnBnClickedGiftWrapping()
 
 void Window::OnBnClickedGraham()
 {
-	// TODO: Add your control notification handler code here
+	CH.clear();
+	if (points.size() < 3)
+		return;
+
+	// Find the leftmost point
+	for (int i = 1; i < points.size(); i++) {
+		if (points[i] < points[0])
+			std::swap(points[i], points[0]);
+	}
+
+	MyPoint leftmost(points[0]);
+
+	// Sort by angle around the leftmost point
+	std::sort(points.begin() + 1, points.end(), [leftmost](MyPoint A, MyPoint B) {
+		return Orientation(leftmost, A, B) < 0;
+		});
+
+	CH.push_back(leftmost);
+	CH.push_back(points[1]);
+
+	int prevIndex = 0;
+	int currIndex = 1;
+
+	for (int i = 2; i < points.size(); i++) {
+		MyPoint nextPoint = points[i];
+
+		// Maintain right-turns only (i.e., counter-clockwise)
+		while (CH.size() >= 2 &&
+			Orientation(CH[CH.size() - 2], CH[CH.size() - 1], nextPoint) > 0)
+		{
+			CH.pop_back();
+		}
+
+		CH.push_back(nextPoint);
+	}
+
+	hullVisible = true;
+	Invalidate(); // redraw with the new convex hull
 }
 
 void Window::OnBnClickedIncremental()
 {
-	// TODO: Add your control notification handler code here
+	if (points.size() < 3)
+		return;
+
+	// Ensure initial orientation is counter-clockwise
+	if (Orientation(points[0], points[1], points[2]) > 0)
+		std::swap(points[1], points[2]);
+
+	CH = { points[0], points[1], points[2] };
+
+	int n = points.size();
+	for (int i = 3; i < n; i++) {
+		MyPoint T = points[i]; // Next point
+
+		if (PointInPolygon(CH, T))
+			continue;
+
+		std::pair<int, int> tangents = findTangents(T, CH);
+		int l = tangents.first;
+		int r = tangents.second;
+
+		if (r < l) {
+			CH.erase(CH.begin() + r + 1, CH.begin() + l);
+			CH.insert(CH.begin() + r + 1, T);
+		}
+		else {
+			CH.erase(CH.begin() + r + 1, CH.end());
+			if (l != 0)
+				CH.erase(CH.begin(), CH.begin() + l);
+			CH.insert(CH.begin(), T);
+		}
+	}
+
+	hullVisible = true;
+	Invalidate(); // Triggers repaint to show the hull
 }
 
 
