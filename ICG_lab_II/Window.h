@@ -66,8 +66,9 @@ public:
 	void AddPoint(int, int);
 
 	std::vector<MyPoint> points;
-	//std::vector<MySegment> segments;
+	std::vector<MySegment> segments;
 	std::vector<MyPoint> CH;
 	bool second_click = false;
 	bool polygonVisible = false;
+	bool hullVisible = false;
 };

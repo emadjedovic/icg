@@ -125,6 +125,9 @@ void Window::OnPaint()
 		if (polygonVisible && points.size() >= 3)
 			DrawPolygon(dc, points);
 
+		if (hullVisible && CH.size() >= 3)
+			DrawPolygon(dc, CH);
+
 		CDialogEx::OnPaint();
 	}
 }
@@ -153,7 +156,10 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 void Window::ClearScreen()
 {
 	points.clear();
+	segments.clear();
+	CH.clear();
 	polygonVisible = false;
+	hullVisible = false;
 	Invalidate();
 }
 
@@ -212,7 +218,38 @@ void Window::OnBnClickedSegmentsIntersect()
 
 void Window::OnBnClickedGiftWrapping()
 {
-	// TODO: Add your control notification handler code here
+		CH.clear(); // make sure previous hull is cleared
+
+		if (points.size() < 3)
+			return;
+
+		// Find the leftmost point
+		for (int i = 1; i < points.size(); i++) {
+			if (points[i] < points[0])
+				std::swap(points[i], points[0]);
+		}
+
+		MyPoint pivot(points[0]);
+		CH.push_back(pivot);
+
+		while (true) {
+			MyPoint P = points[0];
+			if (P == pivot)
+				P = points[1];
+
+			for (const auto& pt : points)
+				if (Orientation(pivot, P, pt) > 0)
+					P = pt;
+
+			if (P == CH.front()) // if wrapped around
+				break;
+
+			CH.push_back(P);
+			pivot = P;
+		}
+
+		hullVisible = true; // make sure this flag is declared in your class
+		Invalidate();       // triggers OnPaint() where the hull will be drawn
 }
 
 void Window::OnBnClickedGraham()
