@@ -70,11 +70,6 @@ BOOL Window::OnInitDialog()
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
-void Window::DrawDot(CDC& dc, const MyPoint& pt)
-{
-	dc.Ellipse(pt.x - 3, pt.y - 3, pt.x + 3, pt.y + 3);
-}
-
 // Returns the drawable area as a CRect with proper margins
 CRect Window::GetDrawableArea() const
 {
@@ -124,7 +119,7 @@ void Window::OnPaint()
 		CPaintDC dc(this);
 		for (const auto& pt : points)
 		{
-			DrawDot(dc, pt);
+			pt.Draw(dc);
 		}
 
 		CDialogEx::OnPaint();
