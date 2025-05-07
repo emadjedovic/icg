@@ -59,7 +59,12 @@ public:
 	CButton CButtonClear;
 
 	//__fastcall TICG_app(TComponent* Owner);
+	CRect GetDrawableArea() const;
+	bool IsPointDrawable(CPoint) const;
+
 	void ClearScreen();
+	void AddPoint(int, int);
+	void DrawDot(CDC&, const MyPoint&);
 
 	std::vector<MyPoint> points;
 	//std::vector<MySegment> segments;

@@ -70,9 +70,37 @@ BOOL Window::OnInitDialog()
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
-// If you add a minimize button to your dialog, you will need the code below
-//  to draw the icon.  For MFC applications using the document/view model,
-//  this is automatically done for you by the framework.
+void Window::DrawDot(CDC& dc, const MyPoint& pt)
+{
+	dc.Ellipse(pt.x - 3, pt.y - 3, pt.x + 3, pt.y + 3);
+}
+
+// Returns the drawable area as a CRect with proper margins
+CRect Window::GetDrawableArea() const
+{
+	CRect rect;
+	GetClientRect(&rect);
+
+	int width = rect.Width();
+	int height = rect.Height();
+
+	int marginLeft = static_cast<int>(width * 0.05);
+	int marginRight = static_cast<int>(width * 0.25);
+	int marginTop = static_cast<int>(height * 0.10);
+	int marginBottom = static_cast<int>(height * 0.20);
+
+	int left = rect.left + marginLeft;
+	int top = rect.top + marginTop;
+	int right = rect.right - marginRight;
+	int bottom = rect.bottom - marginBottom;
+
+	return CRect(left, top, right, bottom);
+}
+
+bool Window::IsPointDrawable(CPoint pt) const
+{
+	return GetDrawableArea().PtInRect(pt);
+}
 
 void Window::OnPaint()
 {
@@ -82,7 +110,6 @@ void Window::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// Center icon in client rectangle
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -90,7 +117,6 @@ void Window::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// Draw the icon
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -98,38 +124,64 @@ void Window::OnPaint()
 		CPaintDC dc(this);
 		for (const auto& pt : points)
 		{
-			dc.Ellipse(static_cast<int>(pt.x) - 3, static_cast<int>(pt.y) - 3,
-				static_cast<int>(pt.x) + 3, static_cast<int>(pt.y) + 3);
+			DrawDot(dc, pt);
 		}
 
 		CDialogEx::OnPaint();
 	}
 }
 
-// The system calls this function to obtain the cursor to display while the user drags
-//  the minimized window.
 HCURSOR Window::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+void Window::AddPoint(int x, int y)
+{
+	CPoint pt(x, y);
+	if (IsPointDrawable(pt))
+	{
+		points.emplace_back(x, y);
+		Invalidate();
+	}
+}
 
 void Window::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	if (point.y > 50) // Avoid the Clear button
-	{
-		points.emplace_back(point.x, point.y);
-		Invalidate();
-	}
-
+	AddPoint(point.x, point.y);
 	CDialogEx::OnLButtonDown(nFlags, point);
 }
 
-void Window::OnBnClickedClear()
+void Window::ClearScreen()
 {
 	points.clear();
 	Invalidate();
 }
+
+void Window::OnBnClickedClear()
+{
+	ClearScreen();
+}
+
+void Window::OnBnClickedGeneratePoints()
+{
+	ClearScreen();
+	CRect drawable = GetDrawableArea();
+	int width = drawable.Width();
+	int height = drawable.Height();
+
+	CString str;
+	CEditNumPoints.GetWindowText(str);
+	int n = _ttoi(str);
+
+	for (int i = 0; i < n; i++)
+	{
+		int x = drawable.left + rand() % width;
+		int y = drawable.top + rand() % height;
+		AddPoint(x, y);
+	}
+}
+
 
 void Window::OnBnClickedSimplePolygon()
 {
@@ -156,7 +208,4 @@ void Window::OnBnClickedIncremental()
 	// TODO: Add your control notification handler code here
 }
 
-void Window::OnBnClickedGeneratePoints()
-{
-	// TODO: Add your control notification handler code here
-}
+
