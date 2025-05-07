@@ -122,6 +122,9 @@ void Window::OnPaint()
 			pt.Draw(dc);
 		}
 
+		if (polygonVisible && points.size() >= 3)
+			DrawPolygon(dc, points);
+
 		CDialogEx::OnPaint();
 	}
 }
@@ -150,6 +153,7 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 void Window::ClearScreen()
 {
 	points.clear();
+	polygonVisible = false;
 	Invalidate();
 }
 
@@ -180,8 +184,26 @@ void Window::OnBnClickedGeneratePoints()
 
 void Window::OnBnClickedSimplePolygon()
 {
-	// TODO: Add your control notification handler code here
+	if (points.size() < 3) {
+		std::cout << "Less than three points.";
+		return;
+	}
+
+	for (int i = 1; i < points.size(); i++) {
+		if (points[i] < points[0]) {
+			std::swap(points[i], points[0]);
+		}
+	}
+
+	MyPoint leftmost(points[0]);
+	sort(points.begin() + 1, points.end(), [leftmost](MyPoint A, MyPoint B) {
+		return Orientation(leftmost, A, B) < 0;
+		});
+
+	polygonVisible = true; // optional: add a flag if needed
+	Invalidate(); // triggers OnPaint()
 }
+
 
 void Window::OnBnClickedSegmentsIntersect()
 {

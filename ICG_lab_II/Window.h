@@ -5,6 +5,7 @@
 #pragma once
 #include <vector>
 #include "helper.h"
+#include <iostream>
 
 // Window dialog
 class Window : public CDialogEx
@@ -68,4 +69,5 @@ public:
 	//std::vector<MySegment> segments;
 	std::vector<MyPoint> CH;
 	bool second_click = false;
+	bool polygonVisible = false;
 };
