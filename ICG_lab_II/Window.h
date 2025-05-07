@@ -5,6 +5,7 @@
 #pragma once
 #include <vector>
 #include "helper.h"
+#include <iostream>
 
 // Window dialog
 class Window : public CDialogEx
@@ -58,11 +59,16 @@ public:
 
 	CButton CButtonClear;
 
-	//__fastcall TICG_app(TComponent* Owner);
+	CRect GetDrawableArea() const;
+	bool IsPointDrawable(CPoint) const;
+
 	void ClearScreen();
+	void AddPoint(int, int);
 
 	std::vector<MyPoint> points;
-	//std::vector<MySegment> segments;
+	std::vector<MySegment> segments;
 	std::vector<MyPoint> CH;
 	bool second_click = false;
+	bool polygonVisible = false;
+	bool hullVisible = false;
 };
