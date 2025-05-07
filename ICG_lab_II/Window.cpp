@@ -228,7 +228,6 @@ void Window::OnBnClickedGeneratePoints()
 	}
 }
 
-
 void Window::OnBnClickedSimplePolygon()
 {
 	if (points.size() < 3) {
@@ -251,11 +250,29 @@ void Window::OnBnClickedSimplePolygon()
 	Invalidate(); // triggers OnPaint()
 }
 
-
 void Window::OnBnClickedSegmentsIntersect()
 {
-	// TODO: Add your control notification handler code here
+	if (segments.size() < 2)
+		return;
+
+	int n = segments.size();
+
+	MySegment s1 = segments[n - 1]; // last
+	MySegment s2 = segments[n - 2]; // second last
+
+	int o1 = Orientation(s1.A, s1.B, s2.A);
+	int o2 = Orientation(s1.A, s1.B, s2.B);
+	int o3 = Orientation(s2.A, s2.B, s1.A);
+	int o4 = Orientation(s2.A, s2.B, s1.B);
+
+	if (o1 != o2 && o3 != o4) {
+		AfxMessageBox(_T("Segments intersect!"));
+	}
+	else {
+		AfxMessageBox(_T("Segments don't intersect!"));
+	}
 }
+
 
 void Window::OnBnClickedGiftWrapping()
 {
