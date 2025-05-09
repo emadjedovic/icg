@@ -38,6 +38,10 @@ void Window::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_POINT_IN_CH, CButtonPointInCH);
 	DDX_Control(pDX, IDC_ADD_SEGMENT, CButtonAddSegment);
 	DDX_Control(pDX, IDC_ADD_POINT, CButtonAddPoint);
+	DDX_Control(pDX, IDC_GENERATE_HV_SEGMENTS2, CButtonGenerateHVSegments);
+	DDX_Control(pDX, IDC_INTERSECT_HV_SEGMENTS, CButtonIntersectHVSegments);
+	DDX_Control(pDX, IDC_TRIANGULATE, CButtonTriangulate);
+	DDX_Control(pDX, IDC_ADD_POLYGON, CButtonAddPolygon);
 }
 
 BEGIN_MESSAGE_MAP(Window, CDialogEx)
@@ -51,6 +55,9 @@ BEGIN_MESSAGE_MAP(Window, CDialogEx)
 	ON_BN_CLICKED(IDC_GRAHAM, &Window::OnBnClickedGraham)
 	ON_BN_CLICKED(IDC_INCREMENTAL, &Window::OnBnClickedIncremental)
 	ON_BN_CLICKED(IDC_GENERATE_POINTS, &Window::OnBnClickedGeneratePoints)
+	ON_BN_CLICKED(IDC_TRIANGULATE, &Window::OnBnClickedTriangulate)
+	ON_BN_CLICKED(IDC_GENERATE_HV_SEGMENTS2, &Window::OnBnClickedGenerateHvSegments)
+	ON_BN_CLICKED(IDC_INTERSECT_HV_SEGMENTS, &Window::OnBnClickedIntersectHvSegments)
 END_MESSAGE_MAP()
 
 
@@ -391,3 +398,18 @@ void Window::OnBnClickedIncremental()
 }
 
 
+
+void Window::OnBnClickedTriangulate()
+{
+	// TODO: Add your control notification handler code here
+}
+
+void Window::OnBnClickedGenerateHvSegments()
+{
+	// TODO: Add your control notification handler code here
+}
+
+void Window::OnBnClickedIntersectHvSegments()
+{
+	// TODO: Add your control notification handler code here
+}

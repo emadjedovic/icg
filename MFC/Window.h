@@ -34,19 +34,23 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnBnClickedClear();
+	CRect GetDrawableArea() const;
+	bool IsPointDrawable(CPoint) const;
+	void ClearScreen();
+	void AddPoint(int, int);
 	
 	CButton CButtonSimplePolygon;
 	CButton CButtonSegmentsIntersect;
 	CButton CButtonGiftWrapping;
 	CButton CButtonGraham;
 	CButton CButtonIncremental;
-
+	CButton CButtonTriangulate;
 	afx_msg void OnBnClickedSimplePolygon();
 	afx_msg void OnBnClickedSegmentsIntersect();
 	afx_msg void OnBnClickedGiftWrapping();
 	afx_msg void OnBnClickedGraham();
 	afx_msg void OnBnClickedIncremental();
+	afx_msg void OnBnClickedTriangulate();
 
 	CEdit CEditNumPoints;
 	CButton CButtonGeneratePoints;
@@ -56,22 +60,22 @@ public:
 	CButton CButtonPointInCH;
 	CButton CButtonAddSegment;
 	CButton CButtonAddPoint;
-
-	CButton CButtonClear;
-
-	CRect GetDrawableArea() const;
-	bool IsPointDrawable(CPoint) const;
-
-	void ClearScreen();
-	void AddPoint(int, int);
+	CButton CButtonAddPolygon;
 
 	std::vector<MyPoint> points;
 	std::vector<MySegment> segments;
+	std::pair<int, int> diagonals;
 	std::vector<MyPoint> CH;
+
 	bool second_click = false;
 	bool polygonVisible = false;
 	bool hullVisible = false;
 
 	CButton CButtonGenerateHVSegments;
 	CButton CButtonIntersectHVSegments;
+	afx_msg void OnBnClickedGenerateHvSegments();
+	afx_msg void OnBnClickedIntersectHvSegments();
+
+	CButton CButtonClear;
+	afx_msg void OnBnClickedClear();
 };
