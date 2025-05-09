@@ -193,6 +193,20 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 				MySegment(newPoint, CH[right_i]).Draw(dc);
 		}
 	}
+	else if (CButtonAddPolygon.GetCheck() == BST_CHECKED)
+	{
+		if (points.size() >= 1)
+		{
+			if (distance(newPoint, points[0]) > 20) {
+				MySegment(points[points.size()-1], newPoint).Draw(dc);
+				points.push_back(newPoint);
+				newPoint.Draw(dc);
+			}
+			else {
+				MySegment(points[points.size()-1], points[0]).Draw(dc);
+			}
+		}
+	}
 
 	points.push_back(newPoint);
 	newPoint.Draw(dc);
@@ -206,6 +220,7 @@ void Window::ClearScreen()
 	points.clear();
 	segments.clear();
 	CH.clear();
+	diagonals.clear();
 	polygonVisible = false;
 	hullVisible = false;
 	Invalidate();
