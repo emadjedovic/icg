@@ -51,7 +51,7 @@ bool PointInTriangle(MyPoint A, MyPoint B, MyPoint C, MyPoint P)
     return o1 == o2 && o2 == o3;
 }
 
-bool PointInPolygon(std::vector<MyPoint>& convPoly, MyPoint P)
+bool PointInPolygon(vector<MyPoint>& convPoly, MyPoint P)
 {
     if (convPoly.size() < 3)
         return false;
@@ -90,7 +90,7 @@ bool middlePointOnGreaterArc(MyPoint T, MyPoint S, MyPoint next)
     return Orientation(T, S, next) < 0;
 }
 
-std::pair<int, int> findTangents(MyPoint T, std::vector<MyPoint>& conv)
+std::pair<int, int> findTangents(MyPoint T, vector<MyPoint>& conv)
 {
     int n = conv.size();
     int left_i = -1;
@@ -221,7 +221,7 @@ void MySegment::Draw(CDC& dc) const
     dc.LineTo(B.x, B.y);
 }
 
-void DrawPolygon(CDC& dc, const std::vector<MyPoint>& points)
+void DrawPolygon(CDC& dc, const vector<MyPoint>& points)
 {
     int numPoints = points.size();
     if (numPoints == 0)
@@ -236,4 +236,22 @@ void DrawPolygon(CDC& dc, const std::vector<MyPoint>& points)
     }
 
     points[0].Draw(dc); // Ensure the first point is drawn again
+}
+
+double distance(MyPoint A, MyPoint B) {
+    return sqrt((A.x - B.x) * (A.x - B.x) + (A.y - B.y) * (A.y - B.y));
+}
+
+list<int>::iterator moveIteratorForward(list<int>::iterator i, list<int>& L) {
+    auto newIt = i;
+    newIt++;
+    if (newIt == L.end()) return L.begin();
+    return newIt;
+}
+
+list<int>::iterator moveIteratorBackward(list<int>::iterator i, list<int>& L) {
+    if (i == L.begin()) return --L.end();
+    auto newIt = i;
+    newIt--;
+    return newIt;
 }

@@ -6,6 +6,9 @@
 #include <queue>
 #include <set>
 
+using std::list;
+using std::vector;
+
 struct MyPoint
 {
     double x, y;
@@ -32,15 +35,15 @@ struct MySegment
     bool vertical() const { return A.x == B.x; };
 };
 
-std::pair<int, int> findTangents(MyPoint, std::vector<MyPoint>&);
+std::pair<int, int> findTangents(MyPoint, vector<MyPoint>&);
 bool PointInTriangle(MyPoint, MyPoint, MyPoint, MyPoint);
-bool PointInPolygon(std::vector<MyPoint>&, MyPoint);
-void DrawPolygon(CDC&, const std::vector<MyPoint>&);
+bool PointInPolygon(vector<MyPoint>&, MyPoint);
+void DrawPolygon(CDC&, const vector<MyPoint>&);
 
 double distance (MyPoint, MyPoint);
 
-std::list<int>::iterator moveIteratorForward(std::list<int>::iterator, std::list<int>&);
-std::list<int>::iterator moveIteratorBackward(std::list<int>::iterator, std::list<int>&);
+list<int>::iterator moveIteratorForward(list<int>::iterator, list<int>&);
+list<int>::iterator moveIteratorBackward(list<int>::iterator, list<int>&);
 
 // intersection of horizontal and vertical segments
 

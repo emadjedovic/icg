@@ -62,10 +62,10 @@ public:
 	CButton CButtonAddPoint;
 	CButton CButtonAddPolygon;
 
-	std::vector<MyPoint> points;
-	std::vector<MySegment> segments;
-	std::vector<std::pair<int, int>> diagonals;
-	std::vector<MyPoint> CH;
+	vector<MyPoint> points;
+	vector<MySegment> segments;
+	vector<std::pair<int, int>> diagonals;
+	vector<MyPoint> CH;
 
 	bool second_click = false;
 	bool polygonVisible = false;

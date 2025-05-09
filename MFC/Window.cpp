@@ -159,7 +159,13 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 	MyPoint newPoint(point.x, point.y);
 	CClientDC dc(this);
 
-	if (CButtonAddSegment.GetCheck() == BST_CHECKED)
+	if (CButtonAddPoint.GetCheck() == BST_CHECKED)
+	{
+		points.push_back(newPoint);
+		newPoint.Draw(dc);
+		CDialogEx::OnLButtonDown(nFlags, point);
+	}
+	else if (CButtonAddSegment.GetCheck() == BST_CHECKED)
 	{
 		if (second_click)
 		{
@@ -168,6 +174,10 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 			segments.push_back(newSegment);
 		}
 		second_click = !second_click;
+		points.push_back(newPoint);
+		newPoint.Draw(dc);
+		CDialogEx::OnLButtonDown(nFlags, point);
+		
 	}
 	else if (CButtonPointInCH.GetCheck() == BST_CHECKED)
 	{
@@ -178,6 +188,10 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 			else
 				AfxMessageBox(_T("Outside the Convex Hull!"));
 		}
+		points.push_back(newPoint);
+		newPoint.Draw(dc);
+
+		CDialogEx::OnLButtonDown(nFlags, point);
 	}
 	else if (CButtonDrawTangents.GetCheck() == BST_CHECKED)
 	{
@@ -192,6 +206,10 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 			if (right_i != -1)
 				MySegment(newPoint, CH[right_i]).Draw(dc);
 		}
+		points.push_back(newPoint);
+		newPoint.Draw(dc);
+
+		CDialogEx::OnLButtonDown(nFlags, point);
 	}
 	else if (CButtonAddPolygon.GetCheck() == BST_CHECKED)
 	{
@@ -206,12 +224,19 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 				MySegment(points[points.size()-1], points[0]).Draw(dc);
 			}
 		}
+		else {
+			points.push_back(newPoint);
+			newPoint.Draw(dc);
+
+			CDialogEx::OnLButtonDown(nFlags, point);
+		}
 	}
+	else {
+		points.push_back(newPoint);
+		newPoint.Draw(dc);
 
-	points.push_back(newPoint);
-	newPoint.Draw(dc);
-
-	CDialogEx::OnLButtonDown(nFlags, point);
+		CDialogEx::OnLButtonDown(nFlags, point);
+	}
 }
 
 
