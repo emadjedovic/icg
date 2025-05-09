@@ -71,4 +71,7 @@ public:
 	bool second_click = false;
 	bool polygonVisible = false;
 	bool hullVisible = false;
+
+	CButton CButtonGenerateHVSegments;
+	CButton CButtonIntersectHVSegments;
 };
