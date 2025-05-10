@@ -90,7 +90,7 @@ bool middlePointOnGreaterArc(MyPoint T, MyPoint S, MyPoint next)
     return Orientation(T, S, next) < 0;
 }
 
-std::pair<int, int> findTangents(MyPoint T, vector<MyPoint>& conv)
+pair<int, int> findTangents(MyPoint T, vector<MyPoint>& conv)
 {
     int n = conv.size();
     int left_i = -1;

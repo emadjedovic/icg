@@ -8,6 +8,7 @@
 
 using std::list;
 using std::vector;
+using std::pair;
 
 struct MyPoint
 {
@@ -35,7 +36,7 @@ struct MySegment
     bool vertical() const { return A.x == B.x; };
 };
 
-std::pair<int, int> findTangents(MyPoint, vector<MyPoint>&);
+pair<int, int> findTangents(MyPoint, vector<MyPoint>&);
 bool PointInTriangle(MyPoint, MyPoint, MyPoint, MyPoint);
 bool PointInPolygon(vector<MyPoint>&, MyPoint);
 void DrawPolygon(CDC&, const vector<MyPoint>&);
@@ -47,11 +48,11 @@ list<int>::iterator moveIteratorBackward(list<int>::iterator, list<int>&);
 
 // intersection of horizontal and vertical segments
 
-struct HorVerSegmentsY {
+struct HorVerSegmentsX {
     /*
     process events from left to right along the x-axis
     */
-    bool operator()(std::pair<MyPoint, MySegment*> e1, std::pair<MyPoint, MySegment*> e2) {
+    bool operator()(pair<MyPoint, MySegment*> e1, pair<MyPoint, MySegment*> e2) {
         return e1.first.x > e2.first.x;
     }
 };

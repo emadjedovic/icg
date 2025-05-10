@@ -64,7 +64,7 @@ public:
 
 	vector<MyPoint> points;
 	vector<MySegment> segments;
-	vector<std::pair<int, int>> diagonals;
+	vector<pair<int, int>> diagonals;
 	vector<MyPoint> CH;
 
 	bool second_click = false;
