@@ -18,10 +18,7 @@
 #define IDC_INCREMENTAL                 1012
 #define IDC_RADIO4                      1013
 #define IDC_DRAW_TANGENTS               1013
-#define IDC_TRIANGULATE                 1014
 #define IDC_ADD_POLYGON                 1015
-#define IDC_GENERATE_HV_SEGMENTS        1016
-#define IDC_INTERSECT_HV_SEGMENTS       1016
 #define IDC_GENERATE_HV_SEGMENTS2       1017
 
 // Next default values for new objects

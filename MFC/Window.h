@@ -44,13 +44,11 @@ public:
 	CButton CButtonGiftWrapping;
 	CButton CButtonGraham;
 	CButton CButtonIncremental;
-	CButton CButtonTriangulate;
 	afx_msg void OnBnClickedSimplePolygon();
 	afx_msg void OnBnClickedSegmentsIntersect();
 	afx_msg void OnBnClickedGiftWrapping();
 	afx_msg void OnBnClickedGraham();
 	afx_msg void OnBnClickedIncremental();
-	afx_msg void OnBnClickedTriangulate();
 
 	CEdit CEditNumPoints;
 	CButton CButtonGeneratePoints;
@@ -64,17 +62,11 @@ public:
 
 	vector<MyPoint> points;
 	vector<MySegment> segments;
-	vector<pair<int, int>> diagonals;
 	vector<MyPoint> CH;
 
 	bool second_click = false;
 	bool polygonVisible = false;
 	bool hullVisible = false;
-
-	CButton CButtonGenerateHVSegments;
-	CButton CButtonIntersectHVSegments;
-	afx_msg void OnBnClickedGenerateHvSegments();
-	afx_msg void OnBnClickedIntersectHvSegments();
 
 	CButton CButtonClear;
 	afx_msg void OnBnClickedClear();
