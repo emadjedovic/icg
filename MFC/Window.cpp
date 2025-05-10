@@ -7,6 +7,8 @@
 #include "ICG_lab_II.h"
 #include "Window.h"
 #include "afxdialogex.h"
+#include <queue>
+#include <algorithm>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -159,7 +161,13 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 	MyPoint newPoint(point.x, point.y);
 	CClientDC dc(this);
 
-	if (CButtonAddSegment.GetCheck() == BST_CHECKED)
+	if (CButtonAddPoint.GetCheck() == BST_CHECKED)
+	{
+		points.push_back(newPoint);
+		newPoint.Draw(dc);
+		CDialogEx::OnLButtonDown(nFlags, point);
+	}
+	else if (CButtonAddSegment.GetCheck() == BST_CHECKED)
 	{
 		if (second_click)
 		{
@@ -168,6 +176,10 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 			segments.push_back(newSegment);
 		}
 		second_click = !second_click;
+		points.push_back(newPoint);
+		newPoint.Draw(dc);
+		CDialogEx::OnLButtonDown(nFlags, point);
+		
 	}
 	else if (CButtonPointInCH.GetCheck() == BST_CHECKED)
 	{
@@ -178,12 +190,16 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 			else
 				AfxMessageBox(_T("Outside the Convex Hull!"));
 		}
+		points.push_back(newPoint);
+		newPoint.Draw(dc);
+
+		CDialogEx::OnLButtonDown(nFlags, point);
 	}
 	else if (CButtonDrawTangents.GetCheck() == BST_CHECKED)
 	{
 		if (CH.size() >= 3)
 		{
-			std::pair<int, int> tangents = findTangents(newPoint, CH);
+			pair<int, int> tangents = findTangents(newPoint, CH);
 			int left_i = tangents.first;
 			int right_i = tangents.second;
 
@@ -192,12 +208,38 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 			if (right_i != -1)
 				MySegment(newPoint, CH[right_i]).Draw(dc);
 		}
+		points.push_back(newPoint);
+		newPoint.Draw(dc);
+
+		CDialogEx::OnLButtonDown(nFlags, point);
 	}
+	else if (CButtonAddPolygon.GetCheck() == BST_CHECKED)
+	{
+		if (points.size() >= 1)
+		{
+			if (distance(newPoint, points[0]) > 20) {
+				MySegment(points[points.size()-1], newPoint).Draw(dc);
+				points.push_back(newPoint);
+				newPoint.Draw(dc);
+				CDialogEx::OnLButtonDown(nFlags, point);
+			}
+			else {
+				MySegment(points[points.size()-1], points[0]).Draw(dc);
+			}
+		}
+		else {
+			points.push_back(newPoint);
+			newPoint.Draw(dc);
 
-	points.push_back(newPoint);
-	newPoint.Draw(dc);
+			CDialogEx::OnLButtonDown(nFlags, point);
+		}
+	}
+	else {
+		points.push_back(newPoint);
+		newPoint.Draw(dc);
 
-	CDialogEx::OnLButtonDown(nFlags, point);
+		CDialogEx::OnLButtonDown(nFlags, point);
+	}
 }
 
 
@@ -206,6 +248,7 @@ void Window::ClearScreen()
 	points.clear();
 	segments.clear();
 	CH.clear();
+	diagonals.clear();
 	polygonVisible = false;
 	hullVisible = false;
 	Invalidate();
@@ -377,7 +420,7 @@ void Window::OnBnClickedIncremental()
 		if (PointInPolygon(CH, T))
 			continue;
 
-		std::pair<int, int> tangents = findTangents(T, CH);
+		pair<int, int> tangents = findTangents(T, CH);
 		int l = tangents.first;
 		int r = tangents.second;
 
@@ -397,19 +440,150 @@ void Window::OnBnClickedIncremental()
 	Invalidate(); // Triggers repaint to show the hull
 }
 
-
-
 void Window::OnBnClickedTriangulate()
 {
-	// TODO: Add your control notification handler code here
+	diagonals.clear();
+	CClientDC dc(this);
+
+	if (points.size() < 3) {
+		return;
+	}
+
+	list<int> points_list;
+	int n = points.size();
+
+	for (int i = 0; i < n; i++) {
+		points_list.push_back(i);
+	}
+
+	auto prev(points_list.begin()), curr(++points_list.begin()), next(++(++points_list.begin()));
+
+	while (diagonals.size() < n - 3) {
+		MyPoint p(points[*prev]);
+		MyPoint t(points[*curr]);
+		MyPoint s(points[*next]);
+		bool ear = true;
+
+		if (Orientation(p, t, s) < 0) {
+			auto check= moveIteratorForward(next, points_list);
+			while (check!= prev) {
+				MyPoint point_to_check = points[*check];
+				if (PointInTriangle(p, t, s, point_to_check)) {
+					ear = false;
+					break;
+				}
+				check= moveIteratorForward(check, points_list);
+			}
+		}
+		else {
+			ear = false;
+		}
+
+		if (ear) {
+			diagonals.push_back({ *prev, *next });
+			MySegment(p, s).Draw(dc);
+
+			points_list.erase(curr);
+			curr = prev;
+			prev = moveIteratorBackward(prev, points_list);
+		}
+		else {
+			prev = curr;
+			curr = next;
+			next = moveIteratorForward(next, points_list);
+		}
+	}
+
+	Invalidate();
+
 }
 
 void Window::OnBnClickedGenerateHvSegments()
 {
-	// TODO: Add your control notification handler code here
+	ClearScreen();
+	CRect drawable = GetDrawableArea();
+	int width = drawable.Width();
+	int height = drawable.Height();
+
+	CString str;
+	CEditNumPoints.GetWindowText(str);
+	int num_segments = _ttoi(str);
+
+	for (int i = 0; i < num_segments; i++) {
+		if (rand() > RAND_MAX / 2) {
+			// horizontal segment
+			int x1 = drawable.left + rand() % width;
+			int x2 = drawable.left + rand() % width;
+			int y = drawable.top + rand() % height;
+			MySegment segment(MyPoint(x1, y), MyPoint(x2, y));
+			segments.push_back(segment);
+		}
+		else {
+			// vertical segment
+			int y1 = drawable.top + rand() % height;
+			int y2 = drawable.top + rand() % height;
+			int x = drawable.left + rand() % width;
+			MySegment segment(MyPoint(x, y1), MyPoint(x, y2));
+			segments.push_back(segment);
+		}
+	}
+
+	CClientDC dc(this);
+	for (const MySegment& segment : segments) {
+		segment.Draw(dc);
+	}
 }
+
 
 void Window::OnBnClickedIntersectHvSegments()
 {
-	// TODO: Add your control notification handler code here
+	CClientDC dc(this);
+
+	if (segments.size() < 2) {
+		return;
+	}
+
+	std::priority_queue<pair<MyPoint, MySegment*>, vector<pair<MyPoint, MySegment*>>, HorVerSegmentsX> events;
+
+	for (int i = 0; i < segments.size(); i++) {
+		if (segments[i].horizontal()) {
+			events.push({ segments[i].A, &segments[i] });
+			events.push({ segments[i].B, &segments[i] });
+		}
+		else {
+			events.push({ segments[i].A, &segments[i] });
+		}
+	}
+
+	std::set<MySegment*, HorSegmentsY> activeSegments;
+
+	while (!events.empty()) {
+		auto event = events.top();
+		events.pop();
+
+		MyPoint t = event.first;
+		MySegment* d = event.second;
+
+		// horizontal segment begins
+		if (d->horizontal() && t == d->A) {
+			activeSegments.insert(d);
+		}
+		// horizontal segment ends
+		else if (d->horizontal() && t == d->B) {
+			activeSegments.erase(d);
+		}
+		// vecrtical segment
+		else {
+			MySegment topSegment(d->A, d->A);
+			MySegment bottomSegment(d->B, d->B);
+
+			auto first = activeSegments.lower_bound(&topSegment);
+			auto after_last = activeSegments.upper_bound(&bottomSegment);
+
+			for (auto it = first; it != after_last; it++) {
+				MyPoint intersection(d->A.x, (*it)->A.y);
+				intersection.Draw(dc);
+			}
+		}
+	}
 }

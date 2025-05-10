@@ -1,6 +1,14 @@
 #pragma once
 #include <algorithm>
 #include <vector>
+#include <list>
+#include <iterator>
+#include <queue>
+#include <set>
+
+using std::list;
+using std::vector;
+using std::pair;
 
 struct MyPoint
 {
@@ -24,12 +32,45 @@ struct MySegment
     }
 
     void Draw(CDC&) const;
+    bool horizontal() const { return A.y == B.y; };
+    bool vertical() const { return A.x == B.x; };
 };
 
-std::pair<int, int> findTangents(MyPoint, std::vector<MyPoint>&);
+pair<int, int> findTangents(MyPoint, vector<MyPoint>&);
 bool PointInTriangle(MyPoint, MyPoint, MyPoint, MyPoint);
-bool PointInPolygon(std::vector<MyPoint>&, MyPoint);
-void DrawPolygon(CDC&, const std::vector<MyPoint>&);
+bool PointInPolygon(vector<MyPoint>&, MyPoint);
+void DrawPolygon(CDC&, const vector<MyPoint>&);
+
+double distance (MyPoint, MyPoint);
+
+list<int>::iterator moveIteratorForward(list<int>::iterator, list<int>&);
+list<int>::iterator moveIteratorBackward(list<int>::iterator, list<int>&);
+
+// intersection of horizontal and vertical segments
+
+struct HorVerSegmentsX {
+    /*
+    process events from left to right along the x-axis
+    */
+    bool operator()(pair<MyPoint, MySegment*> e1, pair<MyPoint, MySegment*> e2) {
+        return e1.first.x > e2.first.x;
+    }
+};
+
+
+struct HorSegmentsY {
+     /*
+    sorts horizontal segments from top to bottom (y ascending),
+    and from left to right (x ascending
+    */
+    bool operator()(MySegment* d1, MySegment* d2) const {
+        if (d1->A.y == d2->A.y) {
+            return d1->A.x < d2->A.x;
+        }
+        return d1->A.y < d2->A.y;
+    }
+};
+
 
 
 
