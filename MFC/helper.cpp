@@ -33,8 +33,6 @@ int Orientation(MyPoint A, MyPoint B, MyPoint C)
 
     double area = x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2);
 
-    // actually modified, + area means positive orientation but due to
-    // TECHNICALITIES we do the opposite...
     if (area > 0)
 		return -1;
     if (area < 0)

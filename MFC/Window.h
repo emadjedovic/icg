@@ -78,6 +78,7 @@ public:
 	CButton CButtonIntersectHVSegments;
 	afx_msg void OnBnClickedGenerateHvSegments();
 	afx_msg void OnBnClickedIntersectHvSegments();
+
 	CButton CButtonTriangulate;
 	afx_msg void OnBnClickedTriangulate();
 };

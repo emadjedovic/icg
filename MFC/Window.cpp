@@ -211,13 +211,20 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 		if (points.size() >= 1)
 		{
 			if (distance(newPoint, points[0]) > 20) {
-				MySegment(points[points.size()-1], newPoint).Draw(dc);
+				
+				MySegment newEdge(points[points.size() - 1], newPoint);
+				segments.push_back(newEdge);
+				newEdge.Draw(dc);
+
 				points.push_back(newPoint);
 				newPoint.Draw(dc);
+
 				CDialogEx::OnLButtonDown(nFlags, point);
 			}
 			else {
-				MySegment(points[points.size()-1], points[0]).Draw(dc);
+				MySegment newEdge(points[points.size() - 1], points[0]);
+				segments.push_back(newEdge);
+				newEdge.Draw(dc);
 			}
 		}
 		else {
@@ -554,7 +561,62 @@ void Window::DrawDiagonal(CDC& dc, const pair<int, int>& d) {
 	dc.LineTo(points[d.second].x, points[d.second].y);
 }
 
+
 void Window::OnBnClickedTriangulate()
 {
-	// TODO: Add your control notification handler code here
+	if (points.size() < 3) {
+		// already a triangle
+		return;
+	}
+
+	// assumes the CCW order of the points
+
+	list<int> points_list;
+	int n = points.size();
+
+	for (int i = 0; i < n; i++) {
+		points_list.push_back(i);
+	}
+
+	auto prevIt = points_list.begin();
+	auto currIt = std::next(prevIt);
+	auto nextIt = std::next(currIt);
+
+	while (diagonals.size() < n - 3) {
+		MyPoint p(points[*prevIt]);
+		MyPoint t(points[*currIt]);
+		MyPoint s(points[*nextIt]);
+		bool ear = true;
+
+		if (Orientation(p, t, s) == -1) {
+			// right-turn
+			auto checkInsideTriangleIt = moveIteratorForward(nextIt, points_list);
+			while (checkInsideTriangleIt != prevIt) {
+				MyPoint checkInsideTriangle = points[*checkInsideTriangleIt];
+				if (PointInTriangle(p, t, s, checkInsideTriangle)) {
+					ear = false;
+					break;
+				}
+				checkInsideTriangleIt = moveIteratorForward(checkInsideTriangleIt, points_list);
+			}
+		}
+		else {
+			ear = false;
+		}
+
+		if (ear) {
+			diagonals.push_back({ *prevIt, *nextIt });
+
+			points_list.erase(currIt);
+			currIt = prevIt;
+			prevIt = moveIteratorBackward(prevIt, points_list);
+		}
+		else {
+			prevIt = currIt;
+			currIt = nextIt;
+			nextIt = moveIteratorForward(nextIt, points_list);
+		}
+	}
+
+	Invalidate(); // draw all the diagonals
 }
