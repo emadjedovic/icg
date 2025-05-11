@@ -65,6 +65,7 @@ public:
 
 	vector<pair<int, int>> diagonals;
 	void DrawDiagonal(CDC&, const pair<int, int>&);
+	vector<MyPoint> intersectionPoints;
 
 	bool second_click = false;
 	bool polygonVisible = false;
@@ -77,4 +78,6 @@ public:
 	CButton CButtonIntersectHVSegments;
 	afx_msg void OnBnClickedGenerateHvSegments();
 	afx_msg void OnBnClickedIntersectHvSegments();
+	CButton CButtonTriangulate;
+	afx_msg void OnBnClickedTriangulate();
 };

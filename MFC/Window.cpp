@@ -9,8 +9,6 @@
 #include "afxdialogex.h"
 #include <queue>
 #include <algorithm>
-#include <cstdlib>
-#include <ctime>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -42,6 +40,7 @@ void Window::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_ADD_POLYGON, CButtonAddPolygon);
 	DDX_Control(pDX, IDC_GENERATE_HV_SEGMENTS2, CButtonGenerateHVSegments);
 	DDX_Control(pDX, IDC_INTERSECT_HV_SEGMENTS, CButtonIntersectHVSegments);
+	DDX_Control(pDX, IDC_TRIANGULATE, CButtonTriangulate);
 }
 
 BEGIN_MESSAGE_MAP(Window, CDialogEx)
@@ -57,6 +56,7 @@ BEGIN_MESSAGE_MAP(Window, CDialogEx)
 	ON_BN_CLICKED(IDC_GENERATE_POINTS, &Window::OnBnClickedGeneratePoints)
 	ON_BN_CLICKED(IDC_GENERATE_HV_SEGMENTS2, &Window::OnBnClickedGenerateHvSegments)
 	ON_BN_CLICKED(IDC_INTERSECT_HV_SEGMENTS, &Window::OnBnClickedIntersectHvSegments)
+	ON_BN_CLICKED(IDC_TRIANGULATE, &Window::OnBnClickedTriangulate)
 END_MESSAGE_MAP()
 
 // Window message handlers
@@ -64,7 +64,6 @@ END_MESSAGE_MAP()
 BOOL Window::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	srand((unsigned)time(NULL));
 
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
@@ -135,6 +134,10 @@ void Window::OnPaint()
 		{
 			DrawDiagonal(dc, dia);
 		}
+		for (const auto& ip : intersectionPoints)
+		{
+			ip.Draw(dc);
+		}
 
 		if (polygonVisible && points.size() >= 3)
 			DrawPolygon(dc, points);
@@ -201,7 +204,6 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 		points.push_back(newPoint);
 		newPoint.Draw(dc);
-
 		CDialogEx::OnLButtonDown(nFlags, point);
 	}
 	else if (CButtonAddPolygon.GetCheck() == BST_CHECKED)
@@ -221,14 +223,12 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 		else {
 			points.push_back(newPoint);
 			newPoint.Draw(dc);
-
 			CDialogEx::OnLButtonDown(nFlags, point);
 		}
 	}
 	else {
 		points.push_back(newPoint);
 		newPoint.Draw(dc);
-
 		CDialogEx::OnLButtonDown(nFlags, point);
 	}
 }
@@ -239,6 +239,7 @@ void Window::ClearScreen()
 	segments.clear();
 	diagonals.clear();
 	CH.clear();
+	intersectionPoints.clear();
 	polygonVisible = false;
 	hullVisible = false;
 	Invalidate();
@@ -481,8 +482,6 @@ void Window::OnBnClickedGenerateHvSegments()
 			points.push_back(point1);
 			points.push_back(point2);
 
-			//Invalidate();
-
 			MySegment segment(point1,point2);
 			segments.push_back(segment);
 		}
@@ -493,7 +492,57 @@ void Window::OnBnClickedGenerateHvSegments()
 
 void Window::OnBnClickedIntersectHvSegments()
 {
-	// TODO: Add your control notification handler code here
+	if (segments.size() < 2) {
+		return;
+	}
+
+	std::priority_queue<pair<MyPoint, MySegment*>, vector<pair<MyPoint, MySegment*>>, HorVerSegmentsX> events;
+
+	for (int i = 0; i < segments.size(); i++) {
+		if (segments[i].horizontal()) {
+			events.push({ segments[i].A, &segments[i] });
+			events.push({ segments[i].B, &segments[i] });
+		}
+		else {
+			events.push({ segments[i].A, &segments[i] });
+		}
+	}
+
+	std::set<MySegment*, HorSegmentsY> activeSegments;
+
+	while (!events.empty()) {
+		auto event = events.top();
+		events.pop();
+
+		MyPoint t = event.first;
+		MySegment* d = event.second;
+
+		//draw the segment d
+
+		// horizontal segment begins
+		if (d->horizontal() && t == d->A) {
+			activeSegments.insert(d);
+		}
+		// horizontal segment ends
+		else if (d->horizontal() && t == d->B) {
+			activeSegments.erase(d);
+		}
+		// vertical segment
+		else {
+			MySegment topSegment(d->A, d->A);
+			MySegment bottomSegment(d->B, d->B);
+
+			auto firstIt = activeSegments.lower_bound(&topSegment);
+			auto afterLastIt = activeSegments.upper_bound(&bottomSegment);
+
+			for (auto it = firstIt; it != afterLastIt; it++) {
+				MyPoint intersectionPoint(d->A.x, (*it)->A.y);
+				intersectionPoints.push_back(intersectionPoint);
+			}
+		}
+	}
+
+	Invalidate();
 }
 
 void Window::DrawDiagonal(CDC& dc, const pair<int, int>& d) {
@@ -503,4 +552,9 @@ void Window::DrawDiagonal(CDC& dc, const pair<int, int>& d) {
 
 	dc.MoveTo(points[d.first].x, points[d.first].y);
 	dc.LineTo(points[d.second].x, points[d.second].y);
+}
+
+void Window::OnBnClickedTriangulate()
+{
+	// TODO: Add your control notification handler code here
 }
