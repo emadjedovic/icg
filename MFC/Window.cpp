@@ -9,15 +9,14 @@
 #include "afxdialogex.h"
 #include <queue>
 #include <algorithm>
+#include <cstdlib>
+#include <ctime>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-
 // Window dialog
-
-
 
 Window::Window(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_ICG_LAB_II_DIALOG, pParent)
@@ -41,6 +40,8 @@ void Window::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_ADD_SEGMENT, CButtonAddSegment);
 	DDX_Control(pDX, IDC_ADD_POINT, CButtonAddPoint);
 	DDX_Control(pDX, IDC_ADD_POLYGON, CButtonAddPolygon);
+	DDX_Control(pDX, IDC_GENERATE_HV_SEGMENTS2, CButtonGenerateHVSegments);
+	DDX_Control(pDX, IDC_INTERSECT_HV_SEGMENTS, CButtonIntersectHVSegments);
 }
 
 BEGIN_MESSAGE_MAP(Window, CDialogEx)
@@ -54,14 +55,16 @@ BEGIN_MESSAGE_MAP(Window, CDialogEx)
 	ON_BN_CLICKED(IDC_GRAHAM, &Window::OnBnClickedGraham)
 	ON_BN_CLICKED(IDC_INCREMENTAL, &Window::OnBnClickedIncremental)
 	ON_BN_CLICKED(IDC_GENERATE_POINTS, &Window::OnBnClickedGeneratePoints)
+	ON_BN_CLICKED(IDC_GENERATE_HV_SEGMENTS2, &Window::OnBnClickedGenerateHvSegments)
+	ON_BN_CLICKED(IDC_INTERSECT_HV_SEGMENTS, &Window::OnBnClickedIntersectHvSegments)
 END_MESSAGE_MAP()
-
 
 // Window message handlers
 
 BOOL Window::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+	srand((unsigned)time(NULL));
 
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
@@ -124,6 +127,10 @@ void Window::OnPaint()
 		{
 			pt.Draw(dc);
 		}
+		for (const auto& seg : segments)
+		{
+			seg.Draw(dc);
+		}
 
 		if (polygonVisible && points.size() >= 3)
 			DrawPolygon(dc, points);
@@ -138,16 +145,6 @@ void Window::OnPaint()
 HCURSOR Window::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
-}
-
-void Window::AddPoint(int x, int y)
-{
-	CPoint pt(x, y);
-	if (IsPointDrawable(pt))
-	{
-		points.emplace_back(x, y);
-		Invalidate();
-	}
 }
 
 void Window::OnLButtonDown(UINT nFlags, CPoint point)
@@ -232,7 +229,6 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 }
 
-
 void Window::ClearScreen()
 {
 	points.clear();
@@ -263,8 +259,14 @@ void Window::OnBnClickedGeneratePoints()
 	{
 		int x = drawable.left + rand() % width;
 		int y = drawable.top + rand() % height;
-		AddPoint(x, y);
+		CPoint pt(x, y);
+		if (IsPointDrawable(pt))
+		{
+			points.push_back(MyPoint(x, y));
+		}
 	}
+
+	Invalidate();
 }
 
 void Window::OnBnClickedSimplePolygon()
@@ -311,7 +313,6 @@ void Window::OnBnClickedSegmentsIntersect()
 		AfxMessageBox(_T("Segments don't intersect!"));
 	}
 }
-
 
 void Window::OnBnClickedGiftWrapping()
 {
@@ -427,4 +428,63 @@ void Window::OnBnClickedIncremental()
 
 	hullVisible = true;
 	Invalidate(); // Triggers repaint to show the hull
+}
+
+void Window::OnBnClickedGenerateHvSegments()
+{
+	ClearScreen();
+	CRect drawable = GetDrawableArea();
+	int width = drawable.Width();
+	int height = drawable.Height();
+
+	CString str;
+	CEditNumPoints.GetWindowText(str);
+	int n = _ttoi(str);
+
+	CClientDC dc(this);
+
+	for (int i = 0; i < n; i++)
+	{
+		if (rand() > RAND_MAX / 2) {
+			// horizontal
+			int x1 = drawable.left + rand() % width;
+			int x2 = drawable.left + rand() % width;
+			while (x2 == x1) {
+				x2 = drawable.left + rand() % width;
+			}
+			int y = drawable.top + rand() % height;
+
+
+		MyPoint point1(x1, y);
+		MyPoint point2(x2, y);
+		points.push_back(point1);
+		points.push_back(point2);
+
+		MySegment segment(point1, point2);
+		segments.push_back(segment);
+		}
+		else {
+			// vertical
+			int y1 = drawable.top + rand() % height;
+			int y2 = drawable.top + rand() % height;
+			int x = drawable.left + rand() % width;
+
+			MyPoint point1(x, y1);
+			MyPoint point2(x, y2);
+			points.push_back(point1);
+			points.push_back(point2);
+
+			//Invalidate();
+
+			MySegment segment(point1,point2);
+			segments.push_back(segment);
+		}
+	}
+
+	Invalidate();
+}
+
+void Window::OnBnClickedIntersectHvSegments()
+{
+	// TODO: Add your control notification handler code here
 }

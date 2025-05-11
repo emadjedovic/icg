@@ -19,7 +19,9 @@
 #define IDC_RADIO4                      1013
 #define IDC_DRAW_TANGENTS               1013
 #define IDC_ADD_POLYGON                 1015
-#define IDC_GENERATE_HV_SEGMENTS2       1017
+#define IDC_GENERATE_HV_SEGMENTS        1017
+#define IDC_INTERSECT_HV_SEGMENTS       1017
+#define IDC_GENERATE_HV_SEGMENTS2       1018
 
 // Next default values for new objects
 // 
@@ -27,7 +29,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        130
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1017
+#define _APS_NEXT_CONTROL_VALUE         1018
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

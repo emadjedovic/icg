@@ -37,7 +37,6 @@ public:
 	CRect GetDrawableArea() const;
 	bool IsPointDrawable(CPoint) const;
 	void ClearScreen();
-	void AddPoint(int, int);
 	
 	CButton CButtonSimplePolygon;
 	CButton CButtonSegmentsIntersect;
@@ -70,4 +69,9 @@ public:
 
 	CButton CButtonClear;
 	afx_msg void OnBnClickedClear();
+
+	CButton CButtonGenerateHVSegments;
+	CButton CButtonIntersectHVSegments;
+	afx_msg void OnBnClickedGenerateHvSegments();
+	afx_msg void OnBnClickedIntersectHvSegments();
 };
