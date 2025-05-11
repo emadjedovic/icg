@@ -131,6 +131,10 @@ void Window::OnPaint()
 		{
 			seg.Draw(dc);
 		}
+		for (const auto& dia : diagonals)
+		{
+			DrawDiagonal(dc, dia);
+		}
 
 		if (polygonVisible && points.size() >= 3)
 			DrawPolygon(dc, points);
@@ -233,6 +237,7 @@ void Window::ClearScreen()
 {
 	points.clear();
 	segments.clear();
+	diagonals.clear();
 	CH.clear();
 	polygonVisible = false;
 	hullVisible = false;
@@ -265,6 +270,8 @@ void Window::OnBnClickedGeneratePoints()
 			points.push_back(MyPoint(x, y));
 		}
 	}
+
+	//diagonals.push_back({ 3,4 });
 
 	Invalidate();
 }
@@ -487,4 +494,13 @@ void Window::OnBnClickedGenerateHvSegments()
 void Window::OnBnClickedIntersectHvSegments()
 {
 	// TODO: Add your control notification handler code here
+}
+
+void Window::DrawDiagonal(CDC& dc, const pair<int, int>& d) {
+	MySegment(points[d.first], points[d.second]).Draw(dc);
+	points[d.first].Draw(dc);
+	points[d.second].Draw(dc);
+
+	dc.MoveTo(points[d.first].x, points[d.first].y);
+	dc.LineTo(points[d.second].x, points[d.second].y);
 }

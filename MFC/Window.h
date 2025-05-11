@@ -63,6 +63,9 @@ public:
 	vector<MySegment> segments;
 	vector<MyPoint> CH;
 
+	vector<pair<int, int>> diagonals;
+	void DrawDiagonal(CDC&, const pair<int, int>&);
+
 	bool second_click = false;
 	bool polygonVisible = false;
 	bool hullVisible = false;
