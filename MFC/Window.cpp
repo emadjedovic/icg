@@ -625,6 +625,14 @@ void Window::OnBnClickedTriangulate()
 	Invalidate(); // draw all the diagonals
 }
 
+void Window::handleIntersection(MySegment* seg1, MySegment* seg2, std::set<MySegment*, ActiveSegmentsTree>& activeSegments, std::priority_queue<pair<MyPoint, pair<MySegment*, MySegment*>>, vector<pair<MyPoint, pair<MySegment*, MySegment*>>>, EventsX>& events) {
+	if (doSegmentsIntersect(*seg1, *seg2)) {
+		MyPoint intersectionPt(intersectionPoint(*seg1, *seg2));
+		intersectionPoints.push_back(intersectionPt);
+		events.push({ intersectionPt, {seg1,seg2} });
+	}
+}
+
 void Window::OnBnClickedGenerateArbitrarySegments()
 {
 	// TODO: Add your control notification handler code here
@@ -634,3 +642,5 @@ void Window::OnBnClickedIntersectArbitrarySegments()
 {
 	// TODO: Add your control notification handler code here
 }
+
+

@@ -254,4 +254,36 @@ list<int>::iterator moveIteratorBackward(list<int>::iterator i, list<int>& L) {
     return newIt;
 }
 
+bool doSegmentsIntersect(MySegment s1, MySegment s2) {
+    int o1 = Orientation(s1.A, s1.B, s2.A);
+    int o2 = Orientation(s1.A, s1.B, s2.B);
+    int o3 = Orientation(s2.A, s2.B, s1.A);
+    int o4 = Orientation(s2.A, s2.B, s1.B);
 
+    return o1 != o2 && o3 != o4;
+}
+
+MyPoint intersectionPoint(MySegment seg1, MySegment seg2) {
+    MyPoint p1 = seg1.A, q1 = seg1.B;
+    MyPoint p2 = seg2.A, q2 = seg2.B;
+
+
+    double a1 = q1.y - p1.y;
+    double b1 = p1.x - q1.x;
+    double c1 = a1 * p1.x + b1 * p1.y;
+
+    double a2 = q2.y - p2.y;
+    double b2 = p2.x - q2.x;
+    double c2 = a2 * p2.x + b2 * p2.y;
+
+    double determinant = a1 * b2 - a2 * b1;
+
+    MyPoint res(0, 0);
+
+    if (determinant != 0) {
+        res.x = (c1 * b2 - c2 * b1) / determinant;
+        res.y = (a1 * c2 - a2 * c1) / determinant;
+        return res;
+    }
+    throw "No intersection found!";
+}
