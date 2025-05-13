@@ -15,10 +15,25 @@ bool MyPoint::operator==(MyPoint p)
     return x == p.x && y == p.y;
 }
 
-void MyPoint::Draw(CDC& dc) const
+//void MyPoint::Draw(CDC& dc) const
+//{
+//    dc.Ellipse(x - 3, y - 3, x + 3, y + 3);
+//}
+
+void MyPoint::Draw(CDC& dc, COLORREF color, int radius) const
 {
-    dc.Ellipse(x - 3, y - 3, x + 3, y + 3);
+    CPen pen(PS_SOLID, 1, color);
+    CBrush brush(color);
+
+    CPen* oldPen = dc.SelectObject(&pen);
+    CBrush* oldBrush = dc.SelectObject(&brush);
+
+    dc.Ellipse(x - radius, y - radius, x + radius, y + radius);
+
+    dc.SelectObject(oldPen);
+    dc.SelectObject(oldBrush);
 }
+
 
 // Returns -1 (left turn), 1 (right turn), or 0 (collinear)
 int Orientation(MyPoint A, MyPoint B, MyPoint C)

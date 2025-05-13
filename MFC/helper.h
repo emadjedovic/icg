@@ -16,7 +16,7 @@ struct MyPoint
     MyPoint(double x, double y) : x(x), y(y) {}
     bool operator<(MyPoint);
     bool operator==(MyPoint);
-    void Draw(CDC&) const;
+    void Draw(CDC& dc, COLORREF color = RGB(0, 0, 0), int radius = 3) const;
 };
 
 int Orientation(MyPoint, MyPoint, MyPoint);
