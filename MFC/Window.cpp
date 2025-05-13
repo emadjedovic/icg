@@ -41,6 +41,8 @@ void Window::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_GENERATE_HV_SEGMENTS2, CButtonGenerateHVSegments);
 	DDX_Control(pDX, IDC_INTERSECT_HV_SEGMENTS, CButtonIntersectHVSegments);
 	DDX_Control(pDX, IDC_TRIANGULATE, CButtonTriangulate);
+	DDX_Control(pDX, IDC_GENERATE_ARBITRARY_SEGMENTS, CButtonGenerateArbitrarySegments);
+	DDX_Control(pDX, IDC_INTERSECT_ARBITRARY_SEGMENTS, CButtonIntersectArbitrarySegments);
 }
 
 BEGIN_MESSAGE_MAP(Window, CDialogEx)
@@ -57,6 +59,8 @@ BEGIN_MESSAGE_MAP(Window, CDialogEx)
 	ON_BN_CLICKED(IDC_GENERATE_HV_SEGMENTS2, &Window::OnBnClickedGenerateHvSegments)
 	ON_BN_CLICKED(IDC_INTERSECT_HV_SEGMENTS, &Window::OnBnClickedIntersectHvSegments)
 	ON_BN_CLICKED(IDC_TRIANGULATE, &Window::OnBnClickedTriangulate)
+	ON_BN_CLICKED(IDC_GENERATE_ARBITRARY_SEGMENTS, &Window::OnBnClickedGenerateArbitrarySegments)
+	ON_BN_CLICKED(IDC_INTERSECT_ARBITRARY_SEGMENTS, &Window::OnBnClickedIntersectArbitrarySegments)
 END_MESSAGE_MAP()
 
 // Window message handlers
@@ -619,4 +623,14 @@ void Window::OnBnClickedTriangulate()
 	}
 
 	Invalidate(); // draw all the diagonals
+}
+
+void Window::OnBnClickedGenerateArbitrarySegments()
+{
+	// TODO: Add your control notification handler code here
+}
+
+void Window::OnBnClickedIntersectArbitrarySegments()
+{
+	// TODO: Add your control notification handler code here
 }

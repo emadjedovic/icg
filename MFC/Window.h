@@ -81,4 +81,9 @@ public:
 
 	CButton CButtonTriangulate;
 	afx_msg void OnBnClickedTriangulate();
+
+	CButton CButtonGenerateArbitrarySegments;
+	CButton CButtonIntersectArbitrarySegments;
+	afx_msg void OnBnClickedGenerateArbitrarySegments();
+	afx_msg void OnBnClickedIntersectArbitrarySegments();
 };

@@ -21,8 +21,10 @@
 #define IDC_ADD_POLYGON                 1015
 #define IDC_INTERSECT_HV_SEGMENTS       1017
 #define IDC_GENERATE_HV_SEGMENTS2       1018
-#define IDC_BUTTON1                     1019
+#define IDC_GENERATE_HV_SEGMENTS        1018
 #define IDC_TRIANGULATE                 1019
+#define IDC_INTERSECT_ARBITRARY_SEGMENTS 1020
+#define IDC_GENERATE_ARBITRARY_SEGMENTS 1021
 
 // Next default values for new objects
 // 
