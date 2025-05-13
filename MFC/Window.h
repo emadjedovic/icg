@@ -33,52 +33,52 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
+
+	vector<MyPoint> points;
+	vector<MySegment> segments;
+	vector<MyPoint> CH;
+	vector<pair<int, int>> diagonals;
+	vector<MyPoint> intersectionPoints;
+	bool second_click = false;
+	bool polygonVisible = false;
+	bool hullVisible = false;
+
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	CRect GetDrawableArea() const;
 	bool IsPointDrawable(CPoint) const;
 	void ClearScreen();
+	void DrawDiagonal(CDC&, const pair<int, int>&);
+	void handleIntersection(MySegment*, MySegment*, std::set<MySegment*, ActiveSegmentsTree>&, std::priority_queue<pair<MyPoint, pair<MySegment*, MySegment*>>, vector<pair<MyPoint, pair<MySegment*, MySegment*>>>, EventsX>&);
 	
 	CButton CButtonSimplePolygon;
 	CButton CButtonSegmentsIntersect;
 	CButton CButtonGiftWrapping;
 	CButton CButtonGraham;
 	CButton CButtonIncremental;
-	afx_msg void OnBnClickedSimplePolygon();
-	afx_msg void OnBnClickedSegmentsIntersect();
-	afx_msg void OnBnClickedGiftWrapping();
-	afx_msg void OnBnClickedGraham();
-	afx_msg void OnBnClickedIncremental();
-
 	CEdit CEditNumPoints;
 	CButton CButtonGeneratePoints;
-	afx_msg void OnBnClickedGeneratePoints();
-
 	CButton CButtonDrawTangents;
 	CButton CButtonPointInCH;
 	CButton CButtonAddSegment;
 	CButton CButtonAddPoint;
 	CButton CButtonAddPolygon;
-
-	vector<MyPoint> points;
-	vector<MySegment> segments;
-	vector<MyPoint> CH;
-
-	vector<pair<int, int>> diagonals;
-	void DrawDiagonal(CDC&, const pair<int, int>&);
-	vector<MyPoint> intersectionPoints;
-
-	bool second_click = false;
-	bool polygonVisible = false;
-	bool hullVisible = false;
-
 	CButton CButtonClear;
-	afx_msg void OnBnClickedClear();
-
 	CButton CButtonGenerateHVSegments;
 	CButton CButtonIntersectHVSegments;
+	CButton CButtonTriangulate;
+	CButton CButtonGenerateArbitrarySegments;
+	CButton CButtonIntersectArbitrarySegments;
+
+	afx_msg void OnBnClickedSimplePolygon();
+	afx_msg void OnBnClickedSegmentsIntersect();
+	afx_msg void OnBnClickedGiftWrapping();
+	afx_msg void OnBnClickedGraham();
+	afx_msg void OnBnClickedIncremental();
+	afx_msg void OnBnClickedGenerateArbitrarySegments();
+	afx_msg void OnBnClickedIntersectArbitrarySegments();
+	afx_msg void OnBnClickedTriangulate();
 	afx_msg void OnBnClickedGenerateHvSegments();
 	afx_msg void OnBnClickedIntersectHvSegments();
-
-	CButton CButtonTriangulate;
-	afx_msg void OnBnClickedTriangulate();
+	afx_msg void OnBnClickedClear();
+	afx_msg void OnBnClickedGeneratePoints();
 };

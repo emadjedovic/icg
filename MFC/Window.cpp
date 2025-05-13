@@ -41,6 +41,8 @@ void Window::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_GENERATE_HV_SEGMENTS2, CButtonGenerateHVSegments);
 	DDX_Control(pDX, IDC_INTERSECT_HV_SEGMENTS, CButtonIntersectHVSegments);
 	DDX_Control(pDX, IDC_TRIANGULATE, CButtonTriangulate);
+	DDX_Control(pDX, IDC_GENERATE_ARBITRARY_SEGMENTS, CButtonGenerateArbitrarySegments);
+	DDX_Control(pDX, IDC_INTERSECT_ARBITRARY_SEGMENTS, CButtonIntersectArbitrarySegments);
 }
 
 BEGIN_MESSAGE_MAP(Window, CDialogEx)
@@ -57,6 +59,8 @@ BEGIN_MESSAGE_MAP(Window, CDialogEx)
 	ON_BN_CLICKED(IDC_GENERATE_HV_SEGMENTS2, &Window::OnBnClickedGenerateHvSegments)
 	ON_BN_CLICKED(IDC_INTERSECT_HV_SEGMENTS, &Window::OnBnClickedIntersectHvSegments)
 	ON_BN_CLICKED(IDC_TRIANGULATE, &Window::OnBnClickedTriangulate)
+	ON_BN_CLICKED(IDC_GENERATE_ARBITRARY_SEGMENTS, &Window::OnBnClickedGenerateArbitrarySegments)
+	ON_BN_CLICKED(IDC_INTERSECT_ARBITRARY_SEGMENTS, &Window::OnBnClickedIntersectArbitrarySegments)
 END_MESSAGE_MAP()
 
 // Window message handlers
@@ -136,7 +140,7 @@ void Window::OnPaint()
 		}
 		for (const auto& ip : intersectionPoints)
 		{
-			ip.Draw(dc);
+			ip.Draw(dc, RGB(255, 255, 0), 5);
 		}
 
 		if (polygonVisible && points.size() >= 3)
@@ -162,7 +166,7 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 	if (CButtonAddPoint.GetCheck() == BST_CHECKED)
 	{
 		points.push_back(newPoint);
-		newPoint.Draw(dc);
+		newPoint.Draw(dc, RGB(255,0,0));
 		CDialogEx::OnLButtonDown(nFlags, point);
 	}
 	else if (CButtonAddSegment.GetCheck() == BST_CHECKED)
@@ -175,7 +179,7 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 		second_click = !second_click;
 		points.push_back(newPoint);
-		newPoint.Draw(dc);
+		newPoint.Draw(dc, RGB(255, 0, 0));
 		CDialogEx::OnLButtonDown(nFlags, point);
 		
 	}
@@ -464,25 +468,21 @@ void Window::OnBnClickedGenerateHvSegments()
 			// horizontal
 			int x1 = drawable.left + rand() % width;
 			int x2 = drawable.left + rand() % width;
-			while (x2 == x1) {
-				x2 = drawable.left + rand() % width;
-			}
-			int y = drawable.top + rand() % height;
+			int y = drawable.top + rand() % height; // the same height
 
+			MyPoint point1(x1, y);
+			MyPoint point2(x2, y);
+			points.push_back(point1);
+			points.push_back(point2);
 
-		MyPoint point1(x1, y);
-		MyPoint point2(x2, y);
-		points.push_back(point1);
-		points.push_back(point2);
-
-		MySegment segment(point1, point2);
-		segments.push_back(segment);
+			MySegment segment(point1, point2);
+			segments.push_back(segment);
 		}
 		else {
 			// vertical
 			int y1 = drawable.top + rand() % height;
 			int y2 = drawable.top + rand() % height;
-			int x = drawable.left + rand() % width;
+			int x = drawable.left + rand() % width; // the same width
 
 			MyPoint point1(x, y1);
 			MyPoint point2(x, y2);
@@ -620,3 +620,154 @@ void Window::OnBnClickedTriangulate()
 
 	Invalidate(); // draw all the diagonals
 }
+
+void Window::handleIntersection(MySegment* seg1, MySegment* seg2,
+	std::set<MySegment*, ActiveSegmentsTree>& activeSegments,
+	std::priority_queue<pair<MyPoint, pair<MySegment*, MySegment*>>, vector<pair<MyPoint, pair<MySegment*, MySegment*>>>, EventsX>& events) {
+	if (doSegmentsIntersect(*seg1, *seg2)) {
+		MyPoint intersectionPt(intersectionPoint(*seg1, *seg2));
+		intersectionPoints.push_back(intersectionPt);
+		events.push({ intersectionPt, {seg1,seg2} });
+	}
+}
+
+void Window::OnBnClickedGenerateArbitrarySegments()
+{
+	ClearScreen();
+	CRect drawable = GetDrawableArea();
+	int width = drawable.Width();
+	int height = drawable.Height();
+
+	CString str;
+	CEditNumPoints.GetWindowText(str);
+	int n = _ttoi(str);
+
+	CClientDC dc(this);
+
+	for (int i = 0; i < n; i++)
+	{
+
+		int x1 = drawable.left + rand() % width;
+		int y1 = drawable.top + rand() % height;
+		MyPoint point1(x1, y1);
+		points.push_back(point1);
+
+		int x2 = drawable.left + rand() % width;
+		int y2 = drawable.top + rand() % height;
+		MyPoint point2(x2, y2);
+		points.push_back(point2);
+
+		MySegment segment(point1, point2);
+		segments.push_back(segment);
+	}
+
+	Invalidate();
+}
+
+void Window::OnBnClickedIntersectArbitrarySegments()
+{
+	CPaintDC dc(this);
+
+	if (segments.size() < 2) {
+		return;
+	}
+
+	std::priority_queue<pair<MyPoint, pair<MySegment*, MySegment*>>, vector<pair<MyPoint, pair<MySegment*, MySegment*>>>, EventsX> events;
+
+	for (int i = 0; i < segments.size(); i++) {
+		events.push({ segments[i].A, {&segments[i], nullptr} });
+		events.push({ segments[i].B, {&segments[i], nullptr} });
+	}
+
+	std::set<MySegment*, ActiveSegmentsTree> activeSegments;
+
+	while (!events.empty()) {
+		auto event = events.top();
+		events.pop();
+
+		MyPoint p = event.first;
+		MySegment* s1 = event.second.first;
+		MySegment* s2 = event.second.second;
+
+
+		if (s2 == nullptr) {
+			// beginning or the end of a segment
+			p.Draw(dc);
+
+
+			if (p == s1->A) {
+				// beginning of a segment
+				auto it = activeSegments.insert(s1).first;
+				auto next_i = it;
+				auto prev_i = it;
+
+				if (activeSegments.size() > 1) {
+					if (it == activeSegments.begin()) {
+						next_i++;
+						handleIntersection(s1, *next_i, activeSegments, events);
+					}
+					else if (it == --activeSegments.end()) {
+						prev_i--;
+						handleIntersection(*prev_i, s1, activeSegments, events);
+					}
+					else {
+						next_i++;
+						handleIntersection(s1, *next_i, activeSegments, events);
+						prev_i--;
+						handleIntersection(*prev_i, s1, activeSegments, events);
+					}
+				}
+			}
+			else {
+				// end of a segment
+				auto it = activeSegments.find(s1);
+				if (it != activeSegments.end()) {
+					if (activeSegments.size() > 2 && it != activeSegments.begin() && it != --activeSegments.end()) {
+						auto prev_i = it;
+						auto next_i = it;
+						prev_i--;
+						next_i++;
+						handleIntersection(*prev_i, *next_i, activeSegments, events);
+					}
+					activeSegments.erase(s1);
+				}
+			}
+		}
+		else {
+			// intersection
+			MyPoint intersection = p;
+
+			if (activeSegments.find(s1) != activeSegments.end()) {
+				activeSegments.erase(s1);
+			}
+			if (activeSegments.find(s2) != activeSegments.end()) {
+				activeSegments.erase(s2);
+			}
+
+			MySegment* newSeg2 = new MySegment(intersection, s1->B);
+			MySegment* newSeg1 = new MySegment(intersection, s2->B);
+
+			auto it1 = activeSegments.insert(newSeg1).first;
+			auto it2 = activeSegments.insert(newSeg2).first;
+
+			events.push({ newSeg1->B, {newSeg1, nullptr} });
+			events.push({ newSeg2->B, {newSeg2, nullptr} });
+
+			auto before_it1 = it1;
+			auto after_it2 = it2;
+
+			if (it1 != activeSegments.begin()) {
+				before_it1--;
+				handleIntersection(*before_it1, *it1, activeSegments, events);
+			}
+			if (it2 != --activeSegments.end()) {
+				after_it2++;
+				handleIntersection(*it2, *after_it2, activeSegments, events);
+			}
+		}
+	}
+
+	Invalidate();
+}
+
+

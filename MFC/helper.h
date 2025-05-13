@@ -16,7 +16,7 @@ struct MyPoint
     MyPoint(double x, double y) : x(x), y(y) {}
     bool operator<(MyPoint);
     bool operator==(MyPoint);
-    void Draw(CDC&) const;
+    void Draw(CDC& dc, COLORREF color = RGB(0, 0, 0), int radius = 3) const;
 };
 
 int Orientation(MyPoint, MyPoint, MyPoint);
@@ -40,7 +40,6 @@ pair<int, int> findTangents(MyPoint, vector<MyPoint>&);
 bool PointInTriangle(MyPoint, MyPoint, MyPoint, MyPoint);
 bool PointInPolygon(vector<MyPoint>&, MyPoint);
 void DrawPolygon(CDC&, const vector<MyPoint>&);
-
 double distance (MyPoint, MyPoint);
 
 list<int>::iterator moveIteratorForward(list<int>::iterator, list<int>&);
@@ -70,6 +69,36 @@ struct HorSegmentsY {
         return d1->A.y < d2->A.y;
     }
 };
+
+struct EventsX {
+    bool operator() (pair<MyPoint, pair<MySegment*, MySegment*>> e1, pair<MyPoint, pair<MySegment*, MySegment*>> e2) {
+        return e1.first.x > e2.first.x;
+    }
+};
+
+struct ActiveSegmentsTree {
+    bool operator()(MySegment* s1, MySegment* s2) const {
+        MyPoint A = s1->A;
+        MyPoint B = s1->B;
+        MyPoint C = s2->A;
+        MyPoint D = s2->B;
+
+        if (A == C) {
+            return Orientation(A, B, D) < 0;
+        }
+        if (A < C) {
+            return Orientation(A, B, C) < 0;
+        }
+        else {
+            return Orientation(C, D, A) > 0;
+        }
+    }
+};
+
+bool doSegmentsIntersect(MySegment, MySegment);
+MyPoint intersectionPoint(MySegment, MySegment);
+
+
 
 
 
