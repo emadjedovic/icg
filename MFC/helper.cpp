@@ -35,7 +35,7 @@ void MyPoint::Draw(CDC& dc, COLORREF color, int radius) const
 }
 
 
-// Returns -1 (left turn), 1 (right turn), or 0 (collinear)
+//  -1 (left turn), 1 (right turn), 0 (collinear)
 int Orientation(MyPoint A, MyPoint B, MyPoint C)
 {
     double x1 = A.x;
@@ -248,7 +248,7 @@ void DrawPolygon(CDC& dc, const vector<MyPoint>& points)
         points[i].Draw(dc);
     }
 
-    points[0].Draw(dc); // Ensure the first point is drawn again
+    points[0].Draw(dc);
 }
 
 double distance(MyPoint A, MyPoint B) {

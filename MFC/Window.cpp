@@ -79,7 +79,6 @@ BOOL Window::OnInitDialog()
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
-// Returns the drawable area as a CRect with proper margins
 CRect Window::GetDrawableArea() const
 {
 	CRect rect;
@@ -110,7 +109,7 @@ void Window::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // device context for painting
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
@@ -127,21 +126,16 @@ void Window::OnPaint()
 	{
 		CPaintDC dc(this);
 		for (const auto& pt : points)
-		{
 			pt.Draw(dc);
-		}
+		
 		for (const auto& seg : segments)
-		{
 			seg.Draw(dc);
-		}
+		
 		for (const auto& dia : diagonals)
-		{
 			DrawDiagonal(dc, dia);
-		}
+		
 		for (const auto& ip : intersectionPoints)
-		{
 			ip.Draw(dc, RGB(255, 255, 0), 5);
-		}
 
 		if (polygonVisible && points.size() >= 3)
 			DrawPolygon(dc, points);
@@ -278,9 +272,7 @@ void Window::OnBnClickedGeneratePoints()
 		int y = drawable.top + rand() % height;
 		CPoint pt(x, y);
 		if (IsPointDrawable(pt))
-		{
 			points.push_back(MyPoint(x, y));
-		}
 	}
 
 	//diagonals.push_back({ 3,4 });
@@ -306,8 +298,8 @@ void Window::OnBnClickedSimplePolygon()
 		return Orientation(leftmost, A, B) < 0;
 		});
 
-	polygonVisible = true; // optional: add a flag if needed
-	Invalidate(); // triggers OnPaint()
+	polygonVisible = true;
+	Invalidate();
 }
 
 void Window::OnBnClickedSegmentsIntersect()
@@ -335,12 +327,12 @@ void Window::OnBnClickedSegmentsIntersect()
 
 void Window::OnBnClickedGiftWrapping()
 {
-		CH.clear(); // make sure previous hull is cleared
+		CH.clear();
 
 		if (points.size() < 3)
 			return;
 
-		// Find the leftmost point
+		// the leftmost point
 		for (int i = 1; i < points.size(); i++) {
 			if (points[i] < points[0])
 				std::swap(points[i], points[0]);
@@ -358,15 +350,15 @@ void Window::OnBnClickedGiftWrapping()
 				if (Orientation(pivot, P, pt) > 0)
 					P = pt;
 
-			if (P == CH.front()) // if wrapped around
+			if (P == CH.front())
 				break;
 
 			CH.push_back(P);
 			pivot = P;
 		}
 
-		hullVisible = true; // make sure this flag is declared in your class
-		Invalidate();       // triggers OnPaint() where the hull will be drawn
+		hullVisible = true;
+		Invalidate();    
 }
 
 void Window::OnBnClickedGraham()
@@ -375,7 +367,7 @@ void Window::OnBnClickedGraham()
 	if (points.size() < 3)
 		return;
 
-	// Find the leftmost point
+	// the leftmost point
 	for (int i = 1; i < points.size(); i++) {
 		if (points[i] < points[0])
 			std::swap(points[i], points[0]);
@@ -383,7 +375,6 @@ void Window::OnBnClickedGraham()
 
 	MyPoint leftmost(points[0]);
 
-	// Sort by angle around the leftmost point
 	std::sort(points.begin() + 1, points.end(), [leftmost](MyPoint A, MyPoint B) {
 		return Orientation(leftmost, A, B) < 0;
 		});
@@ -397,7 +388,6 @@ void Window::OnBnClickedGraham()
 	for (int i = 2; i < points.size(); i++) {
 		MyPoint nextPoint = points[i];
 
-		// Maintain right-turns only (i.e., counter-clockwise)
 		while (CH.size() >= 2 &&
 			Orientation(CH[CH.size() - 2], CH[CH.size() - 1], nextPoint) > 0)
 		{
@@ -408,7 +398,7 @@ void Window::OnBnClickedGraham()
 	}
 
 	hullVisible = true;
-	Invalidate(); // redraw with the new convex hull
+	Invalidate();
 }
 
 void Window::OnBnClickedIncremental()
@@ -416,7 +406,6 @@ void Window::OnBnClickedIncremental()
 	if (points.size() < 3)
 		return;
 
-	// Ensure initial orientation is counter-clockwise
 	if (Orientation(points[0], points[1], points[2]) > 0)
 		std::swap(points[1], points[2]);
 
@@ -424,7 +413,7 @@ void Window::OnBnClickedIncremental()
 
 	int n = points.size();
 	for (int i = 3; i < n; i++) {
-		MyPoint T = points[i]; // Next point
+		MyPoint T = points[i];
 
 		if (PointInPolygon(CH, T))
 			continue;
@@ -446,7 +435,7 @@ void Window::OnBnClickedIncremental()
 	}
 
 	hullVisible = true;
-	Invalidate(); // Triggers repaint to show the hull
+	Invalidate();
 }
 
 void Window::OnBnClickedGenerateHvSegments()
@@ -646,7 +635,6 @@ void Window::OnBnClickedGenerateArbitrarySegments()
 
 	for (int i = 0; i < n; i++)
 	{
-
 		int x1 = drawable.left + rand() % width;
 		int y1 = drawable.top + rand() % height;
 		MyPoint point1(x1, y1);
