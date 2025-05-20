@@ -135,7 +135,7 @@ void Window::OnPaint()
 			DrawDiagonal(dc, dia);
 		
 		for (const auto& ip : intersectionPoints)
-			ip.Draw(dc, RGB(255, 255, 0), 5);
+			ip.Draw(dc, RGB(255, 255, 0), 4);
 
 		if (polygonVisible && points.size() >= 3)
 			DrawPolygon(dc, points);
@@ -154,18 +154,23 @@ HCURSOR Window::OnQueryDragIcon()
 
 void Window::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	if (!IsPointDrawable(point)) {
+		return;
+	}
+
 	MyPoint newPoint(point.x, point.y);
 	CClientDC dc(this);
 
 	if (CButtonAddPoint.GetCheck() == BST_CHECKED)
 	{
 		points.push_back(newPoint);
-		newPoint.Draw(dc, RGB(255,0,0));
+		newPoint.Draw(dc, RGB(255, 0, 0));
 		CDialogEx::OnLButtonDown(nFlags, point);
+	
 	}
 	else if (CButtonAddSegment.GetCheck() == BST_CHECKED)
 	{
-		if (second_click)
+		if (second_click && !points.empty())
 		{
 			MySegment newSegment(points.back(), newPoint);
 			newSegment.Draw(dc);
@@ -209,7 +214,6 @@ void Window::OnLButtonDown(UINT nFlags, CPoint point)
 		if (points.size() >= 1)
 		{
 			if (distance(newPoint, points[0]) > 20) {
-				
 				MySegment newEdge(points[points.size() - 1], newPoint);
 				segments.push_back(newEdge);
 				newEdge.Draw(dc);
@@ -744,9 +748,9 @@ void Window::OnBnClickedIntersectArbitrarySegments()
 	 // draw intersections
 	CClientDC dc(this);
 	for (const auto& ip : intersections)
-		ip.Draw(dc, RGB(255, 255, 0), 5);
+		ip.Draw(dc, RGB(255, 255, 0), 4);
 
-	Invalidate();
+	// Invalidate();
 }
 
 
