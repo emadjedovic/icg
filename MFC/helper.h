@@ -6,9 +6,7 @@
 #include <queue>
 #include <set>
 
-using std::list;
-using std::vector;
-using std::pair;
+using namespace std;
 
 struct MyPoint
 {
@@ -28,7 +26,7 @@ struct MySegment
     MySegment(MyPoint a, MyPoint b) : A(a), B(b)
     {
         if (B < A)
-            std::swap(A, B);
+            swap(A, B);
     }
 
     void Draw(CDC&) const;
@@ -96,14 +94,8 @@ struct ActiveSegmentsTree {
 };
 
 bool doSegmentsIntersect(MySegment, MySegment);
-MyPoint intersectionPoint(MySegment, MySegment);
+MyPoint getIntersectionPoint(MySegment, MySegment);
 
-
-
-
-
-
-
-
-
-
+void handleIntersection(int x_sweep_line, MySegment* seg1, MySegment* seg2,
+    set<MySegment*, ActiveSegmentsTree>& activeSegments, vector<MyPoint>& intersections,
+    priority_queue<pair<MyPoint, pair<MySegment*, MySegment*>>, vector<pair<MyPoint, pair<MySegment*, MySegment*>>>, EventsX>& events);

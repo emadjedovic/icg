@@ -278,7 +278,7 @@ bool doSegmentsIntersect(MySegment s1, MySegment s2) {
     return o1 != o2 && o3 != o4;
 }
 
-MyPoint intersectionPoint(MySegment seg1, MySegment seg2) {
+MyPoint getIntersectionPoint(MySegment seg1, MySegment seg2) {
     MyPoint p1 = seg1.A, q1 = seg1.B;
     MyPoint p2 = seg2.A, q2 = seg2.B;
 
@@ -302,3 +302,17 @@ MyPoint intersectionPoint(MySegment seg1, MySegment seg2) {
     }
     throw "No intersection found!";
 }
+
+void handleIntersection(int x_sweep_line, MySegment* seg1, MySegment* seg2,
+    set<MySegment*, ActiveSegmentsTree>& activeSegments, vector<MyPoint>& intersections,
+    priority_queue<pair<MyPoint, pair<MySegment*, MySegment*>>, vector<pair<MyPoint, pair<MySegment*, MySegment*>>>, EventsX>& events) {
+    if (doSegmentsIntersect(*seg1, *seg2)) {
+        MyPoint intersectionPt(getIntersectionPoint(*seg1, *seg2));
+        if (intersectionPt.x <= x_sweep_line) {
+            return;
+        }
+        intersections.push_back(intersectionPt);
+        events.push({ intersectionPt, {seg1,seg2} });
+    }
+}
+
