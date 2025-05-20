@@ -7,6 +7,8 @@
 #include "helper.h"
 #include <iostream>
 
+using namespace std;
+
 // Window dialog
 class Window : public CDialogEx
 {
@@ -48,7 +50,6 @@ public:
 	bool IsPointDrawable(CPoint) const;
 	void ClearScreen();
 	void DrawDiagonal(CDC&, const pair<int, int>&);
-	void handleIntersection(MySegment*, MySegment*, std::set<MySegment*, ActiveSegmentsTree>&, std::priority_queue<pair<MyPoint, pair<MySegment*, MySegment*>>, vector<pair<MyPoint, pair<MySegment*, MySegment*>>>, EventsX>&);
 	
 	CButton CButtonSimplePolygon;
 	CButton CButtonSegmentsIntersect;
