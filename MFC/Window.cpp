@@ -513,8 +513,6 @@ void Window::OnBnClickedIntersectHvSegments()
 		MyPoint t = event.first;
 		MySegment* d = event.second;
 
-		//draw the segment d
-
 		// horizontal segment begins
 		if (d->horizontal() && t == d->A) {
 			activeSegments.insert(d);
@@ -631,7 +629,7 @@ void Window::OnBnClickedGenerateArbitrarySegments()
 	CEditNumPoints.GetWindowText(str);
 	int n = _ttoi(str);
 
-	CClientDC dc(this);
+	// CClientDC dc(this);
 
 	for (int i = 0; i < n; i++)
 	{
