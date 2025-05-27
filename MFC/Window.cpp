@@ -774,5 +774,33 @@ void Window::OnBnClickedIntersectArbitrarySegments()
 
 void Window::OnBnClickedKdTree()
 {
-	// TODO: Add your control notification handler code here
+	CString str;
+	CEditXmin.GetWindowText(str);
+	int xmin = _ttoi(str);
+	CEditXmax.GetWindowText(str);
+	int xmax = _ttoi(str);
+	CEditYmin.GetWindowText(str);
+	int ymin = _ttoi(str);
+	CEditYmax.GetWindowText(str);
+	int ymax = _ttoi(str);
+
+	CPaintDC dc(this);
+
+	MyRectangle query_p(xmin, xmax, ymin, ymax);
+	query_p.Draw(dc, RGB(255, 0, 0));
+
+	CRect drawable = GetDrawableArea();
+	int width = drawable.Width();
+	int height = drawable.Height();
+
+	// construct a tree
+	KDTree tree(points, width, height);
+	tree.Draw(dc);
+
+	vector<MyPoint> query_points;
+	// run a query
+	tree.query(query_p, query_points);
+	for (auto qp : query_points) {
+		qp.Draw(dc, RGB(255, 255, 0), 4);
+	}
 }

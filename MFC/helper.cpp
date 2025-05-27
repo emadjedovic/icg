@@ -316,3 +316,47 @@ void handleIntersection(int x_sweep_line, MySegment* seg1, MySegment* seg2,
     }
 }
 
+void MyRectangle::Draw(CDC& dc, COLORREF color, int size) const
+{
+
+}
+
+IntersectionType rectanglesIntersection(MyRectangle, MyRectangle)
+{
+
+}
+
+bool ptInsideRectangle(MyPoint, MyRectangle)
+{
+
+}
+
+KDNode* KDTree::constructTree(KDNode*, vector<MyPoint>&, bool)
+{
+
+}
+
+void KDTree::drawSegment(CDC& dc, KDNode*) const
+{
+
+}
+
+void KDTree::addLeaves(KDNode*, vector<MyPoint>&)
+{
+
+}
+
+KDTree::KDTree(vector<MyPoint>&, int, int)
+{
+
+}
+
+void KDTree::Draw(CDC& dc, KDNode*, bool) const
+{
+
+}
+
+void KDTree::query(MyRectangle, vector<MyPoint>&, KDNode*, bool)
+{
+
+}
