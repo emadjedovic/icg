@@ -38,8 +38,8 @@ public:
 
 	vector<MyPoint> points;
 	vector<MySegment> segments;
-	vector<MyPoint> CH;
 	vector<pair<int, int>> diagonals;
+	vector<MyPoint> CH;
 	vector<MyPoint> intersectionPoints;
 	bool second_click = false;
 	bool polygonVisible = false;
@@ -69,6 +69,16 @@ public:
 	CButton CButtonTriangulate;
 	CButton CButtonGenerateArbitrarySegments;
 	CButton CButtonIntersectArbitrarySegments;
+	CEdit CEditXmin;
+	CEdit CEditYmin;
+	CEdit CEditXmax;
+	CEdit CEditYmax;
+	CStatic CLabelXmin;
+	CStatic CLabelYmin;
+	CStatic CLabelXmax;
+	CStatic CLabelYmax;
+	CEdit CTextCoord;
+	CButton CButtonKDTree;
 
 	afx_msg void OnBnClickedSimplePolygon();
 	afx_msg void OnBnClickedSegmentsIntersect();
@@ -82,4 +92,5 @@ public:
 	afx_msg void OnBnClickedIntersectHvSegments();
 	afx_msg void OnBnClickedClear();
 	afx_msg void OnBnClickedGeneratePoints();
+	afx_msg void OnBnClickedKdTree();
 };

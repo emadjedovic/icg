@@ -25,6 +25,17 @@
 #define IDC_TRIANGULATE                 1019
 #define IDC_INTERSECT_ARBITRARY_SEGMENTS 1020
 #define IDC_GENERATE_ARBITRARY_SEGMENTS 1021
+#define IDC_LABEL_X_MIN                 1024
+#define IDC_LABEL_Y_MIN                 1025
+#define IDC_LABEL_X_MAX                 1026
+#define IDC_LABEL_Y_MAX                 1027
+#define IDC_EDIT_X_MIN                  1028
+#define IDC_EDIT_Y_MAX                  1029
+#define IDC_EDIT_Y_MIN                  1030
+#define IDC_EDIT_X_MAX                  1031
+#define IDC_KD_TREE                     1032
+#define IDC_EDIT3                       1033
+#define IDC_TEXT_COORD                  1033
 
 // Next default values for new objects
 // 
@@ -32,7 +43,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        130
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1020
+#define _APS_NEXT_CONTROL_VALUE         1034
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
