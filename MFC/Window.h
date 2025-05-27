@@ -77,9 +77,10 @@ public:
 	CStatic CLabelYmin;
 	CStatic CLabelXmax;
 	CStatic CLabelYmax;
-	CEdit CTextCoord;
 	CButton CButtonKDTree;
+	CStatic CTextCoord;
 
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnBnClickedSimplePolygon();
 	afx_msg void OnBnClickedSegmentsIntersect();
 	afx_msg void OnBnClickedGiftWrapping();

@@ -51,8 +51,8 @@ void Window::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LABEL_Y_MIN, CLabelYmin);
 	DDX_Control(pDX, IDC_LABEL_X_MAX, CLabelXmax);
 	DDX_Control(pDX, IDC_LABEL_Y_MAX, CLabelYmax);
-	DDX_Control(pDX, IDC_TEXT_COORD, CTextCoord);
 	DDX_Control(pDX, IDC_KD_TREE, CButtonKDTree);
+	DDX_Control(pDX, IDC_LABEL_TEXT_COORD, CTextCoord);
 }
 
 BEGIN_MESSAGE_MAP(Window, CDialogEx)
@@ -72,6 +72,7 @@ BEGIN_MESSAGE_MAP(Window, CDialogEx)
 	ON_BN_CLICKED(IDC_GENERATE_ARBITRARY_SEGMENTS, &Window::OnBnClickedGenerateArbitrarySegments)
 	ON_BN_CLICKED(IDC_INTERSECT_ARBITRARY_SEGMENTS, &Window::OnBnClickedIntersectArbitrarySegments)
 	ON_BN_CLICKED(IDC_KD_TREE, &Window::OnBnClickedKdTree)
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 // Window message handlers
@@ -263,6 +264,15 @@ void Window::ClearScreen()
 	polygonVisible = false;
 	hullVisible = false;
 	Invalidate();
+}
+
+void Window::OnMouseMove(UINT nFlags, CPoint point)
+{
+	CString coordText;
+	coordText.Format(_T("X: %d Y: %d"), point.x, point.y);
+	CTextCoord.SetWindowText(coordText);
+
+	CDialogEx::OnMouseMove(nFlags, point);
 }
 
 void Window::OnBnClickedClear()

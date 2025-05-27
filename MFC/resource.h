@@ -34,8 +34,8 @@
 #define IDC_EDIT_Y_MIN                  1030
 #define IDC_EDIT_X_MAX                  1031
 #define IDC_KD_TREE                     1032
-#define IDC_EDIT3                       1033
-#define IDC_TEXT_COORD                  1033
+#define IDC_LABEL_X_MAX2                1034
+#define IDC_LABEL_TEXT_COORD            1034
 
 // Next default values for new objects
 // 
