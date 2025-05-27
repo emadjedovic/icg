@@ -29,7 +29,7 @@ struct MySegment
             swap(A, B);
     }
 
-    void Draw(CDC&) const;
+    void Draw(CDC&, COLORREF color = RGB(0, 0, 0)) const;
     bool horizontal() const { return A.y == B.y; };
     bool vertical() const { return A.x == B.x; };
 };
@@ -100,7 +100,6 @@ void handleIntersection(int x_sweep_line, MySegment* seg1, MySegment* seg2,
     set<MySegment*, ActiveSegmentsTree>& activeSegments, vector<MyPoint>& intersections,
     priority_queue<pair<MyPoint, pair<MySegment*, MySegment*>>, vector<pair<MyPoint, pair<MySegment*, MySegment*>>>, EventsX>& events);
 
-
 // KD-Tree
 
 enum NodeType { HORIZONTAL, VERTICAL, LEAF };
@@ -109,7 +108,7 @@ enum IntersectionType { EMPTY, FULL, PARTIAL };
 struct MyRectangle {
     int xmin, xmax, ymin, ymax;
     MyRectangle(int xmin, int xmax, int ymin, int ymax) : xmin(xmin), xmax(xmax), ymin(ymin), ymax(ymax) {}
-    void Draw(CDC&, COLORREF color = RGB(0, 0, 0), int size = 3) const;
+    void Draw(CDC&, COLORREF color = RGB(0, 0, 0), int thickness = 3) const;
 };
 
 IntersectionType rectanglesIntersection(MyRectangle, MyRectangle);
@@ -129,7 +128,7 @@ public:
 class KDTree {
     KDNode* rootNode;
     KDNode* constructTree(KDNode*, vector<MyPoint>&, bool);
-    void drawSegment(CDC&, KDNode*) const;
+    void drawLine(CDC&, KDNode*) const;
     void addLeaves(KDNode*, vector<MyPoint>&);
 public:
     KDTree(vector<MyPoint>&, int, int);

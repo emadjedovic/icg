@@ -225,13 +225,20 @@ pair<int, int> findTangents(MyPoint T, vector<MyPoint>& conv)
     return { left_i, right_i };
 }
 
-void MySegment::Draw(CDC& dc) const
+void MySegment::Draw(CDC& dc, COLORREF color) const
 {
+    // Create and select a pen with the given color
+    CPen pen(PS_SOLID, 1, color);
+    CPen* oldPen = dc.SelectObject(&pen);
+
     A.Draw(dc);
     B.Draw(dc);
 
     dc.MoveTo(A.x, A.y);
     dc.LineTo(B.x, B.y);
+
+    // Restore the original pen
+    dc.SelectObject(oldPen);
 }
 
 void DrawPolygon(CDC& dc, const vector<MyPoint>& points)
@@ -316,47 +323,236 @@ void handleIntersection(int x_sweep_line, MySegment* seg1, MySegment* seg2,
     }
 }
 
-void MyRectangle::Draw(CDC& dc, COLORREF color, int size) const
+void MyRectangle::Draw(CDC& dc, COLORREF color, int thickness) const
 {
+    CPen pen(PS_SOLID, thickness, color);
+    CPen* oldPen = dc.SelectObject(&pen);
 
+    CBrush brush(color);
+    CBrush* oldBrush = dc.SelectObject(&brush);
+
+    MyPoint gl(xmin, ymin); // top-left
+    MyPoint dl(xmin, ymax); // bottom-left
+    MyPoint dd(xmax, ymax); // bottom-right
+    MyPoint gd(xmax, ymin); // top-right
+
+    vector<MyPoint> rectangle = { gl, dl, dd, gd };
+    DrawPolygon(dc, rectangle);
+
+    dc.SelectObject(oldPen);
+    dc.SelectObject(oldBrush);
 }
 
-IntersectionType rectanglesIntersection(MyRectangle, MyRectangle)
-{
-
+bool inBetween(int x, int xmin, int xmax) {
+    return x >= xmin && x <= xmax;
 }
 
-bool ptInsideRectangle(MyPoint, MyRectangle)
+IntersectionType rectanglesIntersection(MyRectangle rec1, MyRectangle rec2)
 {
+    int min_left = min(rec1.xmin, rec2.xmin);
+    int max_left = max(rec1.xmin, rec2.xmin);
+    int min_right = min(rec1.xmax, rec2.xmax);
+    int max_right = max(rec1.xmax, rec2.xmax);
 
+    if (max_left > min_right) {
+        return EMPTY;
+    }
+
+    int min_top = min(rec1.ymin, rec2.ymin);
+    int max_top = max(rec1.ymin, rec2.ymin);
+    int min_bottom = min(rec1.ymax, rec2.ymax);
+    int max_bottom = max(rec1.ymax, rec2.ymax);
+
+    if (max_top > min_bottom) {
+        return EMPTY;
+    }
+
+    // check whether rec1 is inside of rec2
+    if (!inBetween(rec1.xmin, rec2.xmin, rec2.xmax) ||
+        !inBetween(rec1.xmax, rec2.xmin, rec2.xmax) ||
+        !inBetween(rec1.ymin, rec2.ymin, rec2.ymax) ||
+        !inBetween(rec1.ymax, rec2.ymin, rec2.ymax)) {
+        return PARTIAL;
+    }
+    return FULL;
 }
 
-KDNode* KDTree::constructTree(KDNode*, vector<MyPoint>&, bool)
+bool ptInsideRectangle(MyPoint pt, MyRectangle rec)
 {
-
+    return inBetween(pt.x, rec.xmin, rec.xmax) && inBetween(pt.y, rec.ymin, rec.ymax);
 }
 
-void KDTree::drawSegment(CDC& dc, KDNode*) const
+KDNode* KDTree::constructTree(KDNode* parent, vector<MyPoint>& points, bool isLeftChild)
 {
+    int n = points.size();
+    KDNode* newNode;
 
+    if (n == 0) {
+        return nullptr;
+    }
+
+    MyRectangle region_parent = parent->region;
+    MyRectangle* region;
+    NodeType newNodeType;
+
+    if (parent->nodeType == VERTICAL) {
+        newNodeType = HORIZONTAL;
+        if (isLeftChild) {
+            region = new MyRectangle(region_parent.xmin, parent->pt.x, region_parent.ymin, region_parent.ymax);
+        }
+        else {
+            region = new MyRectangle(parent->pt.x, region_parent.xmax, region_parent.ymin, region_parent.ymax);
+        }
+    }
+    else {
+        newNodeType = VERTICAL;
+        if (isLeftChild) {
+            region = new MyRectangle(region_parent.xmin, region_parent.xmax, region_parent.ymin, parent->pt.y);
+        }
+        else {
+            region = new MyRectangle(region_parent.xmin, region_parent.xmax, parent->pt.y, region_parent.ymax);
+        }
+    }
+
+    if (n == 1) {
+        newNode = new KDNode(parent, LEAF, *region, nullptr, nullptr, points[0]);
+        return newNode;
+    }
+
+    if (newNodeType == VERTICAL) {
+        sort(points.begin(), points.end());
+    }
+    else {
+        sort(points.begin(), points.end(), [](MyPoint t1, MyPoint t2) {return t1.y < t2.y; });
+    }
+
+    int middleIndex = (n - 1) / 2;
+    vector<MyPoint> leftPoints(middleIndex + 1);
+    vector<MyPoint> rightPoints(n - middleIndex - 1);
+
+    copy(points.begin(), points.begin() + middleIndex + 1, leftPoints.begin());
+    copy(points.begin() + middleIndex + 1, points.end(), rightPoints.begin());
+
+    newNode = new KDNode(parent, newNodeType, *region, nullptr, nullptr, points[middleIndex]);
+    KDNode* leftChild = constructTree(newNode, leftPoints, true);
+    KDNode* rightChild = constructTree(newNode, rightPoints, false);
+
+    newNode->leftChild = leftChild;
+    newNode->rightChild = rightChild;
+    return newNode;
 }
 
-void KDTree::addLeaves(KDNode*, vector<MyPoint>&)
+void KDTree::Draw(CDC& dc, KDNode* node, bool isStart) const
 {
+    if (isStart) {
+        node = rootNode;
+    }
+    if (node == nullptr) {
+        return;
+    }
 
+    drawLine(dc, node);
+    Draw(dc, node->leftChild, false);
+    Draw(dc, node->rightChild, false);
 }
 
-KDTree::KDTree(vector<MyPoint>&, int, int)
+void KDTree::addLeaves(KDNode* node, vector<MyPoint>& points)
 {
-
+    if (node) {
+        if (node->nodeType == LEAF) {
+            points.push_back(node->pt);
+        }
+        addLeaves(node->leftChild, points);
+        addLeaves(node->rightChild, points);
+    }
 }
 
-void KDTree::Draw(CDC& dc, KDNode*, bool) const
+KDTree::KDTree(vector<MyPoint>& points, int length, int width)
 {
+    int n = points.size();
+    if (n == 0) {
+        return;
+    }
+    if (n == 1) {
+        rootNode = new KDNode(nullptr, LEAF, MyRectangle(0, length, 0, width), nullptr, nullptr, points[0]);
+    }
+    else {
+        sort(points.begin(), points.end());
+        int middleIndex = (n - 1) / 2;
+        vector<MyPoint> leftPoints(middleIndex + 1);
+        vector<MyPoint> rightPoints(n - middleIndex - 1);
 
+        copy(points.begin(), points.begin() + middleIndex + 1, leftPoints.begin());
+        copy(points.begin() + middleIndex + 1, points.end(), rightPoints.begin());
+
+        rootNode = new KDNode(nullptr, VERTICAL, MyRectangle(0, length, 0, width), nullptr, nullptr, points[middleIndex]);
+        KDNode* leftChild = constructTree(rootNode, leftPoints, true);
+        KDNode* rightChild = constructTree(rootNode, rightPoints, false);
+
+        rootNode->leftChild = leftChild;
+        rootNode->rightChild = rightChild;
+    }
 }
 
-void KDTree::query(MyRectangle, vector<MyPoint>&, KDNode*, bool)
+void KDTree::drawLine(CDC& dc, KDNode* node) const
 {
+    if (node) {
+        if (node->nodeType == VERTICAL) {
+            int x = node->pt.x;
+            int ymin = node->region.ymin;
+            int ymax = node->region.ymax;
+
+            MySegment d(MyPoint(x, ymin), MyPoint(x, ymax));
+            d.Draw(dc, RGB(0,0,255));
+        }
+        else if (node->nodeType == HORIZONTAL) {
+            int y = node->pt.y;
+            int xmin = node->region.xmin;
+            int xmax = node->region.xmax;
+
+            MySegment d(MyPoint(xmin, y), MyPoint(xmax, y));
+            d.Draw(dc, RGB(0,0,255));
+        }
+        else {
+            node->pt.Draw(dc, RGB(255,0,0), 4);
+        }
+    }
+}
+
+void KDTree::query(MyRectangle rec, vector<MyPoint>& queryPoints, KDNode* node, bool isStart)
+{
+    if (isStart) {
+        node = rootNode;
+    }
+    if (node == nullptr) {
+        return;
+    }
+
+    if (node->nodeType == LEAF) {
+        if (ptInsideRectangle(node->pt, rec)) {
+            queryPoints.push_back(node->pt);
+        }
+        return;
+    }
+    if (node->leftChild) {
+        IntersectionType type = rectanglesIntersection(node->leftChild->region, rec);
+        if (type == PARTIAL) {
+            query(rec, queryPoints, node->leftChild, false);
+        }
+        else if (type == FULL) {
+            addLeaves(node->leftChild, queryPoints);
+            //queryPoints.push_back(node->pt);
+        }
+    }
+
+    if (node->rightChild) {
+        IntersectionType type = rectanglesIntersection(node->rightChild->region, rec);
+        if (type == PARTIAL) {
+            query(rec, queryPoints, node->rightChild, false);
+        }
+        else if (type == FULL) {
+            addLeaves(node->rightChild, queryPoints);
+        }
+    }
 
 }
