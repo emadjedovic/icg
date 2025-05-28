@@ -30,7 +30,7 @@ struct MySegment
             swap(A, B);
     }
 
-    void Draw(CDC&, COLORREF color = RGB(0, 0, 0)) const;
+    void Draw(CDC&, COLORREF color = RGB(0, 0, 0), int thickness=1) const;
     bool horizontal() const { return A.y == B.y; };
     bool vertical() const { return A.x == B.x; };
 };
@@ -38,7 +38,7 @@ struct MySegment
 pair<int, int> findTangents(MyPoint, vector<MyPoint>&);
 bool PointInTriangle(MyPoint, MyPoint, MyPoint, MyPoint);
 bool PointInPolygon(vector<MyPoint>&, MyPoint);
-void DrawPolygon(CDC&, const vector<MyPoint>&);
+void DrawPolygon(CDC&, const vector<MyPoint>&,COLORREF color = RGB(0, 0, 0), int thickness=1);
 double distance (MyPoint, MyPoint);
 
 list<int>::iterator moveIteratorForward(list<int>::iterator, list<int>&);

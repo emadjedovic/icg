@@ -767,7 +767,7 @@ void Window::OnBnClickedIntersectArbitrarySegments()
 	 // draw intersections
 	CClientDC dc(this);
 	for (const auto& ip : intersections)
-		ip.Draw(dc, RGB(255, 255, 0), 4);
+		ip.Draw(dc, RGB(255, 255, 0), 3);
 
 	// Invalidate();
 }
@@ -784,10 +784,13 @@ void Window::OnBnClickedKdTree()
 	CEditYmax.GetWindowText(str);
 	int ymax = _ttoi(str);
 
-	CPaintDC dc(this);
+	//CPaintDC dc(this);
+	CClientDC dc(this);
 
 	MyRectangle queryRect(xmin, xmax, ymin, ymax);
-	queryRect.Draw(dc, RGB(255, 0, 0));
+	queryRect.Draw(dc, RGB(0, 200, 0),4);
+
+	AfxMessageBox(_T("Rectangle drawn!"));
 
 	CRect drawable = GetDrawableArea();
 	int width = drawable.Width();
@@ -797,10 +800,14 @@ void Window::OnBnClickedKdTree()
 	KDTree tree(points, width, height);
 	tree.Draw(dc);
 
+	AfxMessageBox(_T("Tree drawn!"));
+
 	vector<MyPoint> queryPoints;
 	// run a query
 	tree.query(queryRect, queryPoints);
 	for (const MyPoint& qp : queryPoints) {
 		qp.Draw(dc, RGB(255, 255, 0), 4);
 	}
+
+	AfxMessageBox(_T("Query result points drawn!"));
 }

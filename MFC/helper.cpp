@@ -225,10 +225,10 @@ pair<int, int> findTangents(MyPoint T, vector<MyPoint>& conv)
     return { left_i, right_i };
 }
 
-void MySegment::Draw(CDC& dc, COLORREF color) const
+void MySegment::Draw(CDC& dc, COLORREF color, int thickness) const
 {
     // Create and select a pen with the given color
-    CPen pen(PS_SOLID, 1, color);
+    CPen pen(PS_SOLID, thickness, color);
     CPen* oldPen = dc.SelectObject(&pen);
 
     A.Draw(dc);
@@ -241,21 +241,31 @@ void MySegment::Draw(CDC& dc, COLORREF color) const
     dc.SelectObject(oldPen);
 }
 
-void DrawPolygon(CDC& dc, const vector<MyPoint>& points)
+void DrawPolygon(CDC& dc, const vector<MyPoint>& points, COLORREF color, int thickness)
 {
     int numPoints = points.size();
     if (numPoints == 0)
         return;
 
+    CPen pen(PS_SOLID, thickness, color);
+    CPen* oldPen = dc.SelectObject(&pen);
+
+    CBrush brush(color);
+    CBrush* oldBrush = dc.SelectObject(&brush);
+
+
     for (int i = 0; i < numPoints; i++)
     {
         size_t nextIndex = (i + 1) % numPoints;
         MySegment edge(points[i], points[nextIndex]);
-        edge.Draw(dc);
-        points[i].Draw(dc);
+        edge.Draw(dc, color, thickness);
+        points[i].Draw(dc, color);
     }
 
-    points[0].Draw(dc);
+    points[0].Draw(dc, color);
+
+    dc.SelectObject(oldPen);
+    dc.SelectObject(oldBrush);
 }
 
 double distance(MyPoint A, MyPoint B) {
@@ -325,22 +335,14 @@ void handleIntersection(int x_sweep_line, MySegment* seg1, MySegment* seg2,
 
 void MyRectangle::Draw(CDC& dc, COLORREF color, int thickness) const
 {
-    CPen pen(PS_SOLID, thickness, color);
-    CPen* oldPen = dc.SelectObject(&pen);
+    vector<MyPoint> rectangle = {
+         MyPoint(xmin, ymin), // top-left
+         MyPoint(xmin, ymax), // bottom-left
+         MyPoint(xmax, ymax), // bottom-right
+         MyPoint(xmax, ymin)  // top-right
+    };
 
-    CBrush brush(color);
-    CBrush* oldBrush = dc.SelectObject(&brush);
-
-    MyPoint gl(xmin, ymin); // top-left
-    MyPoint dl(xmin, ymax); // bottom-left
-    MyPoint dd(xmax, ymax); // bottom-right
-    MyPoint gd(xmax, ymin); // top-right
-
-    vector<MyPoint> rectangle = { gl, dl, dd, gd };
-    DrawPolygon(dc, rectangle);
-
-    dc.SelectObject(oldPen);
-    dc.SelectObject(oldBrush);
+    DrawPolygon(dc, rectangle, color, thickness);
 }
 
 bool inBetween(int x, int xmin, int xmax) {
@@ -505,7 +507,7 @@ void KDTree::drawLine(CDC& dc, KDNode* node) const
             int ymax = node->region.ymax;
 
             MySegment d(MyPoint(x, ymin), MyPoint(x, ymax));
-            d.Draw(dc, RGB(0,0,255));
+            d.Draw(dc, RGB(180,180,180));
         }
         else if (node->nodeType == HORIZONTAL) {
             int y = node->pt.y;
@@ -513,10 +515,10 @@ void KDTree::drawLine(CDC& dc, KDNode* node) const
             int xmax = node->region.xmax;
 
             MySegment d(MyPoint(xmin, y), MyPoint(xmax, y));
-            d.Draw(dc, RGB(0,0,255));
+            d.Draw(dc, RGB(180, 180, 180));
         }
         else {
-            node->pt.Draw(dc, RGB(255,0,0), 4);
+            node->pt.Draw(dc, RGB(255,0,0), 3);
         }
     }
 }
