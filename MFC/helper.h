@@ -1,4 +1,5 @@
 #pragma once
+
 #include <algorithm>
 #include <vector>
 #include <list>
@@ -11,7 +12,7 @@ using namespace std;
 struct MyPoint
 {
     double x, y;
-    MyPoint(double x, double y) : x(x), y(y) {}
+    MyPoint(double x=0, double y=0) : x(x), y(y) {}
     bool operator<(MyPoint);
     bool operator==(MyPoint);
     void Draw(CDC& dc, COLORREF color = RGB(0, 0, 0), int radius = 3) const;
@@ -29,7 +30,7 @@ struct MySegment
             swap(A, B);
     }
 
-    void Draw(CDC&) const;
+    void Draw(CDC&, COLORREF color = RGB(0, 0, 0), int thickness=1) const;
     bool horizontal() const { return A.y == B.y; };
     bool vertical() const { return A.x == B.x; };
 };
@@ -37,7 +38,7 @@ struct MySegment
 pair<int, int> findTangents(MyPoint, vector<MyPoint>&);
 bool PointInTriangle(MyPoint, MyPoint, MyPoint, MyPoint);
 bool PointInPolygon(vector<MyPoint>&, MyPoint);
-void DrawPolygon(CDC&, const vector<MyPoint>&);
+void DrawPolygon(CDC&, const vector<MyPoint>&,COLORREF color = RGB(0, 0, 0), int thickness=1);
 double distance (MyPoint, MyPoint);
 
 list<int>::iterator moveIteratorForward(list<int>::iterator, list<int>&);
@@ -99,3 +100,39 @@ MyPoint getIntersectionPoint(MySegment, MySegment);
 void handleIntersection(int x_sweep_line, MySegment* seg1, MySegment* seg2,
     set<MySegment*, ActiveSegmentsTree>& activeSegments, vector<MyPoint>& intersections,
     priority_queue<pair<MyPoint, pair<MySegment*, MySegment*>>, vector<pair<MyPoint, pair<MySegment*, MySegment*>>>, EventsX>& events);
+
+// KD-Tree
+
+enum NodeType { HORIZONTAL, VERTICAL, LEAF };
+enum IntersectionType { EMPTY, FULL, PARTIAL };
+
+struct MyRectangle {
+    int xmin, xmax, ymin, ymax;
+    MyRectangle(int xmin, int xmax, int ymin, int ymax) : xmin(xmin), xmax(xmax), ymin(ymin), ymax(ymax) {}
+    void Draw(CDC&, COLORREF color = RGB(0, 0, 0), int thickness = 3) const;
+};
+
+IntersectionType rectanglesIntersection(MyRectangle, MyRectangle);
+bool isPointInsideRectangle(MyPoint, MyRectangle);
+
+class KDNode {
+    KDNode* parentNode;
+    KDNode* leftNode, *rightNode;
+    NodeType nodeType;
+    MyRectangle region;
+    MyPoint pt;
+    friend class KDTree;
+public:
+    KDNode(KDNode* parentNode, NodeType nodeType, MyRectangle region, KDNode* leftNode, KDNode* rightNode, MyPoint pt) : parentNode(parentNode), leftNode(leftNode), rightNode(rightNode), nodeType(nodeType), pt(pt), region(region) {}
+};
+
+class KDTree {
+    KDNode* rootNode;
+    KDNode* constructTree(KDNode*, vector<MyPoint>&, bool);
+    void drawLine(CDC&, KDNode*) const;
+    void addLeaves(KDNode*, vector<MyPoint>&);
+public:
+    KDTree(vector<MyPoint>&, int, int);
+    void Draw(CDC&, KDNode* = nullptr, bool = true) const;
+    void query(MyRectangle, vector<MyPoint>&, KDNode* = nullptr, bool = true);
+};

@@ -43,6 +43,16 @@ void Window::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_TRIANGULATE, CButtonTriangulate);
 	DDX_Control(pDX, IDC_GENERATE_ARBITRARY_SEGMENTS, CButtonGenerateArbitrarySegments);
 	DDX_Control(pDX, IDC_INTERSECT_ARBITRARY_SEGMENTS, CButtonIntersectArbitrarySegments);
+	DDX_Control(pDX, IDC_EDIT_X_MIN, CEditXmin);
+	DDX_Control(pDX, IDC_EDIT_Y_MIN, CEditYmin);
+	DDX_Control(pDX, IDC_EDIT_X_MAX, CEditXmax);
+	DDX_Control(pDX, IDC_EDIT_Y_MAX, CEditYmax);
+	DDX_Control(pDX, IDC_LABEL_X_MIN, CLabelXmin);
+	DDX_Control(pDX, IDC_LABEL_Y_MIN, CLabelYmin);
+	DDX_Control(pDX, IDC_LABEL_X_MAX, CLabelXmax);
+	DDX_Control(pDX, IDC_LABEL_Y_MAX, CLabelYmax);
+	DDX_Control(pDX, IDC_KD_TREE, CButtonKDTree);
+	DDX_Control(pDX, IDC_LABEL_TEXT_COORD, CTextCoord);
 }
 
 BEGIN_MESSAGE_MAP(Window, CDialogEx)
@@ -61,6 +71,8 @@ BEGIN_MESSAGE_MAP(Window, CDialogEx)
 	ON_BN_CLICKED(IDC_TRIANGULATE, &Window::OnBnClickedTriangulate)
 	ON_BN_CLICKED(IDC_GENERATE_ARBITRARY_SEGMENTS, &Window::OnBnClickedGenerateArbitrarySegments)
 	ON_BN_CLICKED(IDC_INTERSECT_ARBITRARY_SEGMENTS, &Window::OnBnClickedIntersectArbitrarySegments)
+	ON_BN_CLICKED(IDC_KD_TREE, &Window::OnBnClickedKdTree)
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 // Window message handlers
@@ -87,10 +99,10 @@ CRect Window::GetDrawableArea() const
 	int width = rect.Width();
 	int height = rect.Height();
 
-	int marginLeft = static_cast<int>(width * 0.05);
-	int marginRight = static_cast<int>(width * 0.25);
-	int marginTop = static_cast<int>(height * 0.10);
-	int marginBottom = static_cast<int>(height * 0.20);
+	int marginLeft = static_cast<int>(width * 0.025);
+	int marginRight = static_cast<int>(width * 0.20);
+	int marginTop = static_cast<int>(height * 0.025);
+	int marginBottom = static_cast<int>(height * 0.15);
 
 	int left = rect.left + marginLeft;
 	int top = rect.top + marginTop;
@@ -252,6 +264,15 @@ void Window::ClearScreen()
 	polygonVisible = false;
 	hullVisible = false;
 	Invalidate();
+}
+
+void Window::OnMouseMove(UINT nFlags, CPoint point)
+{
+	CString coordText;
+	coordText.Format(_T("X: %d Y: %d"), point.x, point.y);
+	CTextCoord.SetWindowText(coordText);
+
+	CDialogEx::OnMouseMove(nFlags, point);
 }
 
 void Window::OnBnClickedClear()
@@ -611,8 +632,6 @@ void Window::OnBnClickedTriangulate()
 	Invalidate(); // draw all the diagonals
 }
 
-
-
 void Window::OnBnClickedGenerateArbitrarySegments()
 {
 	ClearScreen();
@@ -748,9 +767,47 @@ void Window::OnBnClickedIntersectArbitrarySegments()
 	 // draw intersections
 	CClientDC dc(this);
 	for (const auto& ip : intersections)
-		ip.Draw(dc, RGB(255, 255, 0), 4);
+		ip.Draw(dc, RGB(255, 255, 0), 3);
 
 	// Invalidate();
 }
 
+void Window::OnBnClickedKdTree()
+{
+	CString str;
+	CEditXmin.GetWindowText(str);
+	int xmin = _ttoi(str);
+	CEditXmax.GetWindowText(str);
+	int xmax = _ttoi(str);
+	CEditYmin.GetWindowText(str);
+	int ymin = _ttoi(str);
+	CEditYmax.GetWindowText(str);
+	int ymax = _ttoi(str);
 
+	//CPaintDC dc(this);
+	CClientDC dc(this);
+
+	MyRectangle queryRect(xmin, xmax, ymin, ymax);
+	queryRect.Draw(dc, RGB(0, 200, 0),4);
+
+	AfxMessageBox(_T("Rectangle drawn!"));
+
+	CRect drawable = GetDrawableArea();
+	int width = drawable.Width();
+	int height = drawable.Height();
+
+	// construct a tree
+	KDTree tree(points, width, height);
+	tree.Draw(dc);
+
+	AfxMessageBox(_T("Tree drawn!"));
+
+	vector<MyPoint> queryPoints;
+	// run a query
+	tree.query(queryRect, queryPoints);
+	for (const MyPoint& qp : queryPoints) {
+		qp.Draw(dc, RGB(255, 255, 0), 4);
+	}
+
+	AfxMessageBox(_T("Query result points drawn!"));
+}
