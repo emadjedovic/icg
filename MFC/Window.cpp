@@ -99,10 +99,10 @@ CRect Window::GetDrawableArea() const
 	int width = rect.Width();
 	int height = rect.Height();
 
-	int marginLeft = static_cast<int>(width * 0.05);
-	int marginRight = static_cast<int>(width * 0.25);
-	int marginTop = static_cast<int>(height * 0.10);
-	int marginBottom = static_cast<int>(height * 0.20);
+	int marginLeft = static_cast<int>(width * 0.025);
+	int marginRight = static_cast<int>(width * 0.20);
+	int marginTop = static_cast<int>(height * 0.025);
+	int marginBottom = static_cast<int>(height * 0.15);
 
 	int left = rect.left + marginLeft;
 	int top = rect.top + marginTop;
@@ -786,8 +786,8 @@ void Window::OnBnClickedKdTree()
 
 	CPaintDC dc(this);
 
-	MyRectangle query_p(xmin, xmax, ymin, ymax);
-	query_p.Draw(dc, RGB(255, 0, 0));
+	MyRectangle queryRect(xmin, xmax, ymin, ymax);
+	queryRect.Draw(dc, RGB(255, 0, 0));
 
 	CRect drawable = GetDrawableArea();
 	int width = drawable.Width();
@@ -797,10 +797,10 @@ void Window::OnBnClickedKdTree()
 	KDTree tree(points, width, height);
 	tree.Draw(dc);
 
-	vector<MyPoint> query_points;
+	vector<MyPoint> queryPoints;
 	// run a query
-	tree.query(query_p, query_points);
-	for (auto qp : query_points) {
+	tree.query(queryRect, queryPoints);
+	for (const MyPoint& qp : queryPoints) {
 		qp.Draw(dc, RGB(255, 255, 0), 4);
 	}
 }

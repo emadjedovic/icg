@@ -4,7 +4,6 @@
 //
 #define IDD_ICG_LAB_II_DIALOG           102
 #define IDR_MAINFRAME                   128
-#define IDC_BUTTON2                     1001
 #define IDC_CLEAR                       1001
 #define IDC_SIMPLE_POLYGON              1002
 #define IDC_SEGMENTS_INTERSECT          1003
@@ -16,7 +15,6 @@
 #define IDC_POINT_IN_CH                 1010
 #define IDC_GRAHAM                      1011
 #define IDC_INCREMENTAL                 1012
-#define IDC_RADIO4                      1013
 #define IDC_DRAW_TANGENTS               1013
 #define IDC_ADD_POLYGON                 1015
 #define IDC_INTERSECT_HV_SEGMENTS       1017
@@ -34,7 +32,6 @@
 #define IDC_EDIT_Y_MIN                  1030
 #define IDC_EDIT_X_MAX                  1031
 #define IDC_KD_TREE                     1032
-#define IDC_LABEL_X_MAX2                1034
 #define IDC_LABEL_TEXT_COORD            1034
 
 // Next default values for new objects

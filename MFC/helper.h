@@ -1,4 +1,5 @@
 #pragma once
+
 #include <algorithm>
 #include <vector>
 #include <list>
@@ -11,7 +12,7 @@ using namespace std;
 struct MyPoint
 {
     double x, y;
-    MyPoint(double x, double y) : x(x), y(y) {}
+    MyPoint(double x=0, double y=0) : x(x), y(y) {}
     bool operator<(MyPoint);
     bool operator==(MyPoint);
     void Draw(CDC& dc, COLORREF color = RGB(0, 0, 0), int radius = 3) const;
@@ -112,17 +113,17 @@ struct MyRectangle {
 };
 
 IntersectionType rectanglesIntersection(MyRectangle, MyRectangle);
-bool ptInsideRectangle(MyPoint, MyRectangle);
+bool isPointInsideRectangle(MyPoint, MyRectangle);
 
 class KDNode {
-    KDNode* parent;
-    KDNode* leftChild, *rightChild;
+    KDNode* parentNode;
+    KDNode* leftNode, *rightNode;
     NodeType nodeType;
     MyRectangle region;
     MyPoint pt;
     friend class KDTree;
 public:
-    KDNode(KDNode* parent, NodeType nodeType, MyRectangle region, KDNode* leftChild, KDNode* rightChild, MyPoint t) : parent(parent), leftChild(leftChild), rightChild(rightChild), nodeType(nodeType), pt(t), region(region) {}
+    KDNode(KDNode* parentNode, NodeType nodeType, MyRectangle region, KDNode* leftNode, KDNode* rightNode, MyPoint pt) : parentNode(parentNode), leftNode(leftNode), rightNode(rightNode), nodeType(nodeType), pt(pt), region(region) {}
 };
 
 class KDTree {
@@ -135,4 +136,3 @@ public:
     void Draw(CDC&, KDNode* = nullptr, bool = true) const;
     void query(MyRectangle, vector<MyPoint>&, KDNode* = nullptr, bool = true);
 };
-

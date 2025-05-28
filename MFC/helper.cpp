@@ -377,95 +377,11 @@ IntersectionType rectanglesIntersection(MyRectangle rec1, MyRectangle rec2)
     return FULL;
 }
 
-bool ptInsideRectangle(MyPoint pt, MyRectangle rec)
+bool isPointInsideRectangle(MyPoint pt, MyRectangle rec)
 {
     return inBetween(pt.x, rec.xmin, rec.xmax) && inBetween(pt.y, rec.ymin, rec.ymax);
 }
 
-KDNode* KDTree::constructTree(KDNode* parent, vector<MyPoint>& points, bool isLeftChild)
-{
-    int n = points.size();
-    KDNode* newNode;
-
-    if (n == 0) {
-        return nullptr;
-    }
-
-    MyRectangle region_parent = parent->region;
-    MyRectangle* region;
-    NodeType newNodeType;
-
-    if (parent->nodeType == VERTICAL) {
-        newNodeType = HORIZONTAL;
-        if (isLeftChild) {
-            region = new MyRectangle(region_parent.xmin, parent->pt.x, region_parent.ymin, region_parent.ymax);
-        }
-        else {
-            region = new MyRectangle(parent->pt.x, region_parent.xmax, region_parent.ymin, region_parent.ymax);
-        }
-    }
-    else {
-        newNodeType = VERTICAL;
-        if (isLeftChild) {
-            region = new MyRectangle(region_parent.xmin, region_parent.xmax, region_parent.ymin, parent->pt.y);
-        }
-        else {
-            region = new MyRectangle(region_parent.xmin, region_parent.xmax, parent->pt.y, region_parent.ymax);
-        }
-    }
-
-    if (n == 1) {
-        newNode = new KDNode(parent, LEAF, *region, nullptr, nullptr, points[0]);
-        return newNode;
-    }
-
-    if (newNodeType == VERTICAL) {
-        sort(points.begin(), points.end());
-    }
-    else {
-        sort(points.begin(), points.end(), [](MyPoint t1, MyPoint t2) {return t1.y < t2.y; });
-    }
-
-    int middleIndex = (n - 1) / 2;
-    vector<MyPoint> leftPoints(middleIndex + 1);
-    vector<MyPoint> rightPoints(n - middleIndex - 1);
-
-    copy(points.begin(), points.begin() + middleIndex + 1, leftPoints.begin());
-    copy(points.begin() + middleIndex + 1, points.end(), rightPoints.begin());
-
-    newNode = new KDNode(parent, newNodeType, *region, nullptr, nullptr, points[middleIndex]);
-    KDNode* leftChild = constructTree(newNode, leftPoints, true);
-    KDNode* rightChild = constructTree(newNode, rightPoints, false);
-
-    newNode->leftChild = leftChild;
-    newNode->rightChild = rightChild;
-    return newNode;
-}
-
-void KDTree::Draw(CDC& dc, KDNode* node, bool isStart) const
-{
-    if (isStart) {
-        node = rootNode;
-    }
-    if (node == nullptr) {
-        return;
-    }
-
-    drawLine(dc, node);
-    Draw(dc, node->leftChild, false);
-    Draw(dc, node->rightChild, false);
-}
-
-void KDTree::addLeaves(KDNode* node, vector<MyPoint>& points)
-{
-    if (node) {
-        if (node->nodeType == LEAF) {
-            points.push_back(node->pt);
-        }
-        addLeaves(node->leftChild, points);
-        addLeaves(node->rightChild, points);
-    }
-}
 
 KDTree::KDTree(vector<MyPoint>& points, int length, int width)
 {
@@ -486,11 +402,97 @@ KDTree::KDTree(vector<MyPoint>& points, int length, int width)
         copy(points.begin() + middleIndex + 1, points.end(), rightPoints.begin());
 
         rootNode = new KDNode(nullptr, VERTICAL, MyRectangle(0, length, 0, width), nullptr, nullptr, points[middleIndex]);
-        KDNode* leftChild = constructTree(rootNode, leftPoints, true);
-        KDNode* rightChild = constructTree(rootNode, rightPoints, false);
+        KDNode* leftNode = constructTree(rootNode, leftPoints, true);
+        KDNode* rightNode = constructTree(rootNode, rightPoints, false);
 
-        rootNode->leftChild = leftChild;
-        rootNode->rightChild = rightChild;
+        rootNode->leftNode = leftNode;
+        rootNode->rightNode = rightNode;
+    }
+}
+
+
+KDNode* KDTree::constructTree(KDNode* parentNode, vector<MyPoint>& pts, bool isLeftChild)
+{
+    int n = pts.size();
+    KDNode* newNode;
+
+    if (n == 0) {
+        return nullptr;
+    }
+
+    MyRectangle regionParent = parentNode->region;
+    MyRectangle* region;
+    NodeType newNodeType;
+
+    if (parentNode->nodeType == VERTICAL) {
+        newNodeType = HORIZONTAL;
+        if (isLeftChild) {
+            region = new MyRectangle(regionParent.xmin, parentNode->pt.x, regionParent.ymin, regionParent.ymax);
+        }
+        else {
+            region = new MyRectangle(parentNode->pt.x, regionParent.xmax, regionParent.ymin, regionParent.ymax);
+        }
+    }
+    else {
+        newNodeType = VERTICAL;
+        if (isLeftChild) {
+            region = new MyRectangle(regionParent.xmin, regionParent.xmax, regionParent.ymin, parentNode->pt.y);
+        }
+        else {
+            region = new MyRectangle(regionParent.xmin, regionParent.xmax, parentNode->pt.y, regionParent.ymax);
+        }
+    }
+
+    if (n == 1) {
+        newNode = new KDNode(parentNode, LEAF, *region, nullptr, nullptr, pts[0]);
+        return newNode;
+    }
+
+    if (newNodeType == VERTICAL) {
+        sort(pts.begin(), pts.end());
+    }
+    else {
+        sort(pts.begin(), pts.end(), [](MyPoint t1, MyPoint t2) {return t1.y < t2.y; });
+    }
+
+    int middleIndex = (n - 1) / 2;
+    vector<MyPoint> leftPoints(middleIndex + 1);
+    vector<MyPoint> rightPoints(n - middleIndex - 1);
+
+    copy(pts.begin(), pts.begin() + middleIndex + 1, leftPoints.begin());
+    copy(pts.begin() + middleIndex + 1, pts.end(), rightPoints.begin());
+
+    newNode = new KDNode(parentNode, newNodeType, *region, nullptr, nullptr, pts[middleIndex]);
+    KDNode* leftNode = constructTree(newNode, leftPoints, true);
+    KDNode* rightNode = constructTree(newNode, rightPoints, false);
+
+    newNode->leftNode = leftNode;
+    newNode->rightNode = rightNode;
+    return newNode;
+}
+
+void KDTree::Draw(CDC& dc, KDNode* node, bool isStart) const
+{
+    if (isStart) {
+        node = rootNode;
+    }
+    if (node == nullptr) {
+        return;
+    }
+
+    drawLine(dc, node);
+    Draw(dc, node->leftNode, false);
+    Draw(dc, node->rightNode, false);
+}
+
+void KDTree::addLeaves(KDNode* node, vector<MyPoint>& pts)
+{
+    if (node) {
+        if (node->nodeType == LEAF) {
+            pts.push_back(node->pt);
+        }
+        addLeaves(node->leftNode, pts);
+        addLeaves(node->rightNode, pts);
     }
 }
 
@@ -529,29 +531,29 @@ void KDTree::query(MyRectangle rec, vector<MyPoint>& queryPoints, KDNode* node, 
     }
 
     if (node->nodeType == LEAF) {
-        if (ptInsideRectangle(node->pt, rec)) {
+        if (isPointInsideRectangle(node->pt, rec)) {
             queryPoints.push_back(node->pt);
         }
         return;
     }
-    if (node->leftChild) {
-        IntersectionType type = rectanglesIntersection(node->leftChild->region, rec);
+    if (node->leftNode) {
+        IntersectionType type = rectanglesIntersection(node->leftNode->region, rec);
         if (type == PARTIAL) {
-            query(rec, queryPoints, node->leftChild, false);
+            query(rec, queryPoints, node->leftNode, false);
         }
         else if (type == FULL) {
-            addLeaves(node->leftChild, queryPoints);
+            addLeaves(node->leftNode, queryPoints);
             //queryPoints.push_back(node->pt);
         }
     }
 
-    if (node->rightChild) {
-        IntersectionType type = rectanglesIntersection(node->rightChild->region, rec);
+    if (node->rightNode) {
+        IntersectionType type = rectanglesIntersection(node->rightNode->region, rec);
         if (type == PARTIAL) {
-            query(rec, queryPoints, node->rightChild, false);
+            query(rec, queryPoints, node->rightNode, false);
         }
         else if (type == FULL) {
-            addLeaves(node->rightChild, queryPoints);
+            addLeaves(node->rightNode, queryPoints);
         }
     }
 
